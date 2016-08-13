@@ -13,6 +13,8 @@ const app = express();
 app.use(bodyParser.json());
 
 app.post('/groupme', function(req, res) {
+    console.log(req.body);
+
     if (req.body.text.match(/harambe/i)) {
         say('Dicks out for Harambe!');
     }
