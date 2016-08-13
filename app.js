@@ -1,7 +1,6 @@
 const express = require('express');
 const https = require('https');
-
-const app = express();
+const bodyParser = require('body-parser');
 
 const postOptions = {
     hostname: 'api.groupme.com',
@@ -9,10 +8,12 @@ const postOptions = {
     method: 'POST'
 };
 
-app.post('/groupme', function(req, res) {
-    var msg = JSON.parse(req.body);
+const app = express();
 
-    if (msg.text.match(/harambe/i)) {
+app.use(bodyParser.json());
+
+app.post('/groupme', function(req, res) {
+    if (req.body.text.match(/harambe/i)) {
         say('Dicks out for Harambe!');
     }
 
