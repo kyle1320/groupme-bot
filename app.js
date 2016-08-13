@@ -1,4 +1,5 @@
 const express = require('express');
+const https = require('https');
 
 const app = express();
 
@@ -24,7 +25,7 @@ function say(msg) {
         'text': msg
     };
 
-    http.request(postOptions).end(body);
+    https.request(postOptions).end(body);
 }
 
 var port = process.env.PORT || 3000;
