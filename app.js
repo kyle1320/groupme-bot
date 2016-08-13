@@ -21,7 +21,7 @@ function parseMessage(req, res) {
     if (process.env.BOT_DEBUG) {
         console.log('variables');
         for (var key in process.env) {
-            if (!key.beginsWith('npm_')) {
+            if (!key.startsWith('npm_')) {
                 console.log(key, process.env[key]);
             }
         }
