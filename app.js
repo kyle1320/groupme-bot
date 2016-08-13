@@ -19,6 +19,7 @@ app.post('/groupme', parseMessage);
 
 function parseMessage(req, res) {
     if (process.env.BOT_DEBUG) {
+        console.log('variables', process.env);
         console.log('message', req.body);
     }
 
@@ -37,21 +38,21 @@ function parseMessage(req, res) {
 }
 
 function botEnabled(mode) {
-    return new RegExp(mode, 'g').test(process.env.BOT_MODES);
+    return new RegExp(mode, 'gi').test(process.env.BOT_MODES);
 }
 
 function say(msg, bot_id) {
     if (process.env.BOT_DEBUG) {
         console.log('response', msg, 'from', bot_id);
-    } else {
-        var body = {
-            'bot_id': bot_id,
-            'text': msg
-        };
-
-        var req = https.request(postOptions);
-        req.end(JSON.stringify(body));
     }
+
+    var body = {
+        'bot_id': bot_id,
+        'text': msg
+    };
+
+    var req = https.request(postOptions);
+    req.end(JSON.stringify(body));
 }
 
 var port = process.env.PORT || 3000;

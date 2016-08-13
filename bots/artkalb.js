@@ -6,6 +6,10 @@ const MSG_DELAY = +process.env.ARTKALB_DELAY || 1000 * 60 * 10;
 var lastMsgTime = 0;
 
 exports.consult = function(msg, say) {
+    if (process.env.BOT_DEBUG) {
+        console.log('artkalb got message');
+    }
+
     if (typeof msg !== 'object') return;
     msg.text = msg.text || '';
 
