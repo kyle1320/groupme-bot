@@ -1,20 +1,31 @@
 const express = require('express');
 
-var app = express();
+const app = express();
 
-app.get('/', function(req, res) {
-    res.end('success!');
-});
+const postOptions = {
+    hostname: 'api.groupme.com',
+    path: '/v3/bots/post',
+    method: 'POST'
+};
 
-app.get('/echo', function(req, res) {
-    res.send(req.query);
+app.post('/groupme', function(req, res) {
+    var msg = JSON.parse(req.body);
+
+    if (msg.text.match(/harambe/i)) {
+        say('Dicks out for Harambe!');
+    }
+
     res.end();
 });
 
-app.post('/echo', function(req, res) {
-    res.send(req.body);
-    res.end();
-});
+function say(msg) {
+    var body = {
+        'bot_id': process.env.BOT_ID,
+        'text': msg
+    };
+
+    http.request(postOptions).end(body);
+}
 
 var port = process.env.PORT || 3000;
 app.listen(port);
