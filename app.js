@@ -45,15 +45,15 @@ function botEnabled(bot) {
 }
 
 function say(msg, bot) {
-    if (process.env.BOT_DEBUG) {
-        console.log('response', msg, 'from', bot.name);
-        bot_id = process.env.DEBUG_BOT_ID;
-    }
-
     var body = {
         'bot_id': bot.getId(),
         'text': msg
     };
+
+    if (process.env.BOT_DEBUG) {
+        console.log('response', msg, 'from', bot.name);
+        body.bot_id = process.env.DEBUG_BOT_ID;
+    }
 
     var req = https.request(postOptions);
     req.end(JSON.stringify(body));
