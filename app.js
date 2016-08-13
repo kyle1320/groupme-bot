@@ -26,7 +26,9 @@ function say(msg) {
         'text': msg
     };
 
-    https.request(postOptions).end(body);
+    var req = https.request(postOptions);
+    req.json(body);
+    req.end();
 }
 
 var port = process.env.PORT || 3000;
