@@ -34,7 +34,5 @@ function say(msg) {
     req.end(JSON.stringify(body));
 }
 
-say('hello');
-
 var port = process.env.PORT || 3000;
 app.listen(port);
