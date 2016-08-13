@@ -27,9 +27,10 @@ function say(msg) {
     };
 
     var req = https.request(postOptions);
-    req.json(body);
-    req.end();
+    req.end(JSON.stringify(body));
 }
+
+say('hello');
 
 var port = process.env.PORT || 3000;
 app.listen(port);
