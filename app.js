@@ -19,7 +19,12 @@ app.post('/groupme', parseMessage);
 
 function parseMessage(req, res) {
     if (process.env.BOT_DEBUG) {
-        console.log('variables', process.env);
+        console.log('variables');
+        for (var key in process.env) {
+            if (!key.beginsWith('npm_')) {
+                console.log(key, process.env[key]);
+            }
+        }
         console.log('message', req.body);
     }
 
@@ -44,6 +49,7 @@ function botEnabled(mode) {
 function say(msg, bot_id) {
     if (process.env.BOT_DEBUG) {
         console.log('response', msg, 'from', bot_id);
+        bot_id = process.env.DEBUGBOT_ID;
     }
 
     var body = {
