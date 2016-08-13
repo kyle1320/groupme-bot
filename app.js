@@ -15,45 +15,43 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/groupme', parseMessage);
+app.post('/harambe', consult(harambe));
+app.post('/artkalb', consult(artkalb));
 
-function parseMessage(req, res) {
-    if (process.env.BOT_DEBUG) {
-        console.log('variables');
-        for (var key in process.env) {
-            if (!key.startsWith('npm_')) {
-                console.log(key, process.env[key]);
+function consult(bot) {
+    return function(req, res) {
+        if (process.env.BOT_DEBUG) {
+            for (var key in process.env) {
+                if (!key.startsWith('npm_')) {
+                    console.log(key, process.env[key]);
+                }
+            }
+            console.log('message', req.body, 'to', bot.name);
+        }
+
+        // make sure we don't get any infinite bot loops...
+        if (req.body.sender_type !== 'bot') {
+            if (botEnabled(bot)) {
+                bot.consult(req.body, say);
             }
         }
-        console.log('message', req.body);
-    }
 
-    // make sure we don't get any infinite bot loops...
-    if (req.body.sender_type !== 'bot') {
-        if (botEnabled('harambe')) {
-            harambe.consult(req.body, say);
-        }
-
-        if (botEnabled('artkalb')) {
-            artkalb.consult(req.body, say);
-        }
-    }
-
-    res.end();
+        res.end();
+    };
 }
 
-function botEnabled(mode) {
-    return new RegExp(mode, 'gi').test(process.env.BOT_MODES);
+function botEnabled(bot) {
+    return new RegExp(bot.name, 'gi').test(process.env.BOT_MODES);
 }
 
-function say(msg, bot_id) {
+function say(msg, bot) {
     if (process.env.BOT_DEBUG) {
-        console.log('response', msg, 'from', bot_id);
-        bot_id = process.env.DEBUGBOT_ID;
+        console.log('response', msg, 'from', bot.name);
+        bot_id = process.env.DEBUG_BOT_ID;
     }
 
     var body = {
-        'bot_id': bot_id,
+        'bot_id': bot.getId(),
         'text': msg
     };
 

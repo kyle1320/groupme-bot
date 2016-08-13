@@ -2,7 +2,7 @@
   "name": "groupme-bot",
   "version": "0.0.1",
   "dependencies": {
-    "body-parser": "^1.15.2",
+    "body-parser": "1.15.2",
     "express": "4.14.0"
   },
   "scripts": {

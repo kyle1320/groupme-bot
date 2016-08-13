@@ -5,6 +5,8 @@ const MSG_DELAY = +process.env.ARTKALB_DELAY || 1000 * 60 * 10;
 
 var lastMsgTime = 0;
 
+exports.name = 'artkalb';
+
 exports.consult = function(msg, say) {
     if (process.env.BOT_DEBUG) {
         console.log('artkalb got message');
@@ -21,11 +23,15 @@ exports.consult = function(msg, say) {
             // use the longest match
             matches.sort(function(a,b) { return b.length - a.length });
 
-            say(format(matches[0]), process.env.ARTKALB_BOT_ID);
+            say(format(matches[0]), module.exports);
 
             lastMsgTime = Date.now();
         }
     }
+};
+
+exports.getId = function() {
+    return process.env.ARTKALB_BOT_ID;
 };
 
 function format(word) {
