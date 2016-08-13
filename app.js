@@ -61,3 +61,5 @@ function say(msg, bot) {
 
 var port = process.env.PORT || 3000;
 app.listen(port);
+
+module.exports = {say: say, consult: consult, botEnabled: botEnabled};
