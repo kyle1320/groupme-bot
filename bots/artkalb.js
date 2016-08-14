@@ -11,24 +11,25 @@ exports.name = 'artkalb';
 exports.id = process.env.ARTKALB_BOT_ID;
 
 exports.consult = function(msg) {
-    if (typeof msg !== 'object') return;
-    if (typeof msg.text !== 'string') return;
-
-    // too soon
-    if (Date.now() - lastMsgTime < MSG_DELAY) return;
+    if (Date.now() - lastMsgTime < MSG_DELAY) return; // too soon
 
     var matches = msg.text.match(punRegExp);
 
     if (matches && matches.length) {
 
-        // use the longest match
-        matches.sort(function(a,b) { return b.length - a.length });
+        // find the longest matching word
+        var longestMatch = matches[0];
+        for (var i = 1; i < matches.length; i++) {
+            if (matches[i].length > longestMatch.length) {
+                longestMatch = matches[i];
+            }
+        }
 
         // note the current time (for rate limiting)
         lastMsgTime = Date.now();
 
         return {
-            'text': createPun(matches[0])
+            'text': createPun(longestMatch)
         };
     }
 };
