@@ -1,15 +1,10 @@
 exports.name = 'harambe';
+exports.id = process.env.HARAMBE_BOT_ID;
 
-exports.consult = function consult(msg, say) {
-    if (process.env.BOT_DEBUG) {
-        console.log('harambe got message');
-    }
-
+exports.consult = function(msg) {
     if (msg.text.match(/harambe/i)) {
-        say('Dicks out for Harambe!', module.exports);
+        return {
+            'text': 'Dicks out for Harambe!'
+        };
     }
-};
-
-exports.getId = function() {
-    return process.env.HARAMBE_BOT_ID;
 };

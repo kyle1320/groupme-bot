@@ -1,4 +1,4 @@
-const re = /([a-z]{3,}[eo]r)\b/gi;
+const punRegExp = /([a-z]{3,}[eo]r)\b/gi;
 
 // 10 minute default delay between messages
 const MSG_DELAY = +process.env.ARTKALB_DELAY || 1000 * 60 * 10;
@@ -6,43 +6,29 @@ const MSG_DELAY = +process.env.ARTKALB_DELAY || 1000 * 60 * 10;
 var lastMsgTime = 0;
 
 exports.name = 'artkalb';
+exports.id = process.env.ARTKALB_BOT_ID;
 
-exports.consult = function(msg, say) {
-    if (process.env.BOT_DEBUG) {
-        console.log('artkalb got message');
-    }
-
+exports.consult = function(msg) {
     if (typeof msg !== 'object') return;
-    msg.text = msg.text || '';
+    if (typeof msg.text !== 'string') return;
+    if (Date.now() - lastMsgTime < MSG_DELAY) return;
 
-    if (Date.now() - lastMsgTime >= MSG_DELAY) {
-        var matches = msg.text.match(re);
+    var matches = msg.text.match(punRegExp);
 
-        if (matches && matches.length) {
+    if (matches && matches.length) {
 
-            // use the longest match
-            matches.sort(function(a,b) { return b.length - a.length });
+        // use the longest match
+        matches.sort(function(a,b) { return b.length - a.length });
 
-            say(format(matches[0]), module.exports);
+        // note the current time (for rate limiting)
+        lastMsgTime = Date.now();
 
-            lastMsgTime = Date.now();
-        }
+        return {
+            'text': createPun(matches[0])
+        };
     }
 };
 
-exports.getId = function() {
-    return process.env.ARTKALB_BOT_ID;
-};
-
-function format(word) {
+function createPun(word) {
     return word + '? I hardly know her!';
-}
-
-// tests. Should print out 'appreciator? I hardly know her!'
-if (require.main === module) {
-    exports.consult({text: ''}, console.log);
-    exports.consult({text: 'garbage text'}, console.log);
-    exports.consult({text: 'radiators'}, console.log);
-    exports.consult({text: 'carrier appreciator'}, console.log);
-    exports.consult({text: 'radiater'}, console.log);
 }
