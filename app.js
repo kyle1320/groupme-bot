@@ -1,5 +1,4 @@
 const https = require('https');
-
 const BotRunner = require('./botrunner');
 
 const postOptions = {
@@ -13,4 +12,12 @@ function submit(body) {
     req.end(JSON.stringify(body));
 }
 
-const runner = new BotRunner(submit);
+const runner = new BotRunner(submit, {
+    debug: process.env.BOT_DEBUG,
+    debugBotId: process.env.DEBUG_BOT_ID
+});
+
+runner.addBot(require('./bots/harambe'));
+runner.addBot(require('./bots/artkalb'));
+
+runner.listen(process.env.PORT);

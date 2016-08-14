@@ -1,3 +1,5 @@
+
+// the regular expression used to test for "puns" in messages.
 const punRegExp = /([a-z]{3,}[eo]r)\b/gi;
 
 // 10 minute default delay between messages
@@ -11,6 +13,8 @@ exports.id = process.env.ARTKALB_BOT_ID;
 exports.consult = function(msg) {
     if (typeof msg !== 'object') return;
     if (typeof msg.text !== 'string') return;
+
+    // too soon
     if (Date.now() - lastMsgTime < MSG_DELAY) return;
 
     var matches = msg.text.match(punRegExp);
