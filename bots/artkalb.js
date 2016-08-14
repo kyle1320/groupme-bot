@@ -2,6 +2,12 @@
 // the regular expression used to test for "puns" in messages.
 const punRegExp = /([a-z]{3,}[eo]r)\b/gi;
 
+// a list of special case items. If any of these regexes match,
+// the "response" item will be used as the word in the pun.
+const specialCases = [
+    {regex: /pumpernickel/i, response: 'Pump \'er Nickel'}
+];
+
 // 10 minute default delay between messages
 const MSG_DELAY = +process.env.ARTKALB_DELAY || 1000 * 60 * 10;
 
@@ -12,6 +18,14 @@ exports.id = process.env.ARTKALB_BOT_ID;
 
 exports.consult = function(msg) {
     if (Date.now() - lastMsgTime < MSG_DELAY) return; // too soon
+
+    for (var i = 0; i < specialCases.length; i++) {
+        var sCase = specialCases[i];
+
+        if (sCase.regex.test(msg.text)) {
+            return makePun(sCase.response);
+        }
+    }
 
     var matches = msg.text.match(punRegExp);
 
@@ -25,15 +39,17 @@ exports.consult = function(msg) {
             }
         }
 
-        // note the current time (for rate limiting)
-        lastMsgTime = Date.now();
-
-        return {
-            'text': createPun(longestMatch)
-        };
+        return makePun(longestMatch);
     }
 };
 
-function createPun(word) {
-    return word + '? I hardly know her!';
+// should only be called when sending a message.
+function makePun(word) {
+
+    // note the current time (for rate limiting)
+    lastMsgTime = Date.now();
+
+    return {
+        'text': word + '? I hardly know her!'
+    };
 }

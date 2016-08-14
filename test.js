@@ -140,6 +140,19 @@ testRequest(
         assert.equal(msgs[1].bot_id, 'harambeid');
     }
 }).then(function() {
+    return new Promise(function(resolve, reject) {
+        setTimeout(function() {
+            resolve(testRequest(
+                '/artkalb',
+                {'text': 'pumpernickel overachiever'}
+            ));
+        }, 1000);
+    });
+}).then(function(msgs) {
+    assert.equal(msgs.length, 1);
+    assert.equal(msgs[0].text, 'Pump \'er Nickel? I hardly know her!');
+    assert.equal(msgs[0].bot_id, 'artkalbid');
+}).then(function() {
     testBotRunner.close();
 
     console.log('passed all tests');
