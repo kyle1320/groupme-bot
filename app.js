@@ -12,6 +12,7 @@ function submit(body) {
     req.end(JSON.stringify(body));
 }
 
+// runner? I hardly know her!
 const runner = new BotRunner(submit, {
     debug: process.env.BOT_DEBUG,
     debugBotId: process.env.DEBUG_BOT_ID
