@@ -61,10 +61,6 @@ function BotRunner(submit, options) {
 // consults the given bot using the given request, and processes the message
 // if one is returned.
 BotRunner.prototype.consult = function(bot, req) {
-    if (typeof req !== 'object') return;
-    if (typeof req.body !== 'object') return;
-    if (typeof req.body.text !== 'string') return;
-
     var msg = bot.consult(req.body);
 
     if (this.options.debug) {
@@ -79,7 +75,9 @@ BotRunner.prototype.consult = function(bot, req) {
 // processes the given request and determines whether it should
 // go to a bot. Returns true if the request is bot-worthy, false otherwise.
 BotRunner.prototype.preprocess = function(req) {
+    if (typeof req !== 'object') return false;
     if (typeof req.body !== 'object') return false;
+    if (typeof req.body.text !== 'string') return false;
 
     if (this.options.debug) {
         console.log('message', req.body, 'to ' + req.url);
