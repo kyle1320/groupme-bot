@@ -8,7 +8,7 @@ module.exports = BotRunner;
 // under it, and submits their responses to a given function.
 // submit is the function to be called when the bot says something.
 // options is an object that may contain the following keys:
-//   debug:         Whether to print debug messages, etc.
+//   verbose:       Whether to print debug messages, etc.
 //   debugBotId:    The bot id to use when sending messages in debug mode.
 //                  This overrides any default bot ids.
 function BotRunner(submit, options) {
@@ -18,7 +18,7 @@ function BotRunner(submit, options) {
 
     // if options wasn't given, use a default object
     options = options || {
-        debug: false,
+        verbose: false,
         debugBotId: undefined
     };
 
@@ -63,7 +63,7 @@ function BotRunner(submit, options) {
 BotRunner.prototype.consult = function(bot, req) {
     var msg = bot.consult(req.body);
 
-    if (this.options.debug) {
+    if (this.options.verbose) {
         console.log(bot.name + ' received message, returned', msg);
     }
  	
@@ -71,12 +71,12 @@ BotRunner.prototype.consult = function(bot, req) {
 
         // if debugging, use the debug bot ID and say which bot
         // the message is coming from.
-	if (this.options.debug || 'debug' in req.query) {
+	if ('debug' in req.query) {
             msg.bot_id = this.options.debugBotId;
             msg.text = bot.name + ': ' + msg.text;
 	}
 
-        if (this.options.debug) {
+        if (this.options.verbose) {
             console.log('response', msg, 'from ' + bot.name);
         }
 
@@ -91,7 +91,7 @@ BotRunner.prototype.preprocess = function(req) {
     if (typeof req.body !== 'object') return false;
     if (typeof req.body.text !== 'string') return false;
 
-    if (this.options.debug) {
+    if (this.options.verbose) {
         console.log('message', req.body, 'to ' + req.url);
     }
 

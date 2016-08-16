@@ -15,8 +15,8 @@ The BotRunner module allows for the instantiation of a server that may run sever
 The BotRunner constructor takes two arguments:
   * **submit:** A function that takes a single argument `body` that is a message object compatible with the GroupMe API. This will be called any time a bot sends a message. This function should likely send a POST request to the API, but is provided in case other functionality is desired.
   * **options:** An object that specifies behavior options for this BotRunner. Valid keys are:
-    * **debug:** Whether to enable Debug mode on the BotRunner
-    * **debugBotId:** The GroupMe bot ID to use when messages are sent in Debug mode.
+    * **verbose:** Whether to output logging messages such as received / sent messages, etc.
+    * **debugBotId:** The GroupMe bot ID to use when messages are sent in debug mode (see below).   
 
 Bots can be registered by calling `BotRunner.addBot(bot)`. Once a bot is registered, POST requests to the path `/[bot.name]` will be directed to the bot.
 
@@ -25,10 +25,8 @@ POST requests to the path `/all` will go to all registered bots.
 The server must be started by calling `BotRunner.listen(port)`, and may be stopped by calling `BotRunner.close()`.
 
 ## Debugging
-Debug mode can be enabled by setting the environment variable `BOT_DEBUG` to any non-empty string.
+Verbose logging can be enabled by setting the environment variable `BOT_VERBOSE` to any non-empty string.
 
-In Debug mode, information such as received / sent messages are displayed to `stdout`.
+With verbose logging enabled, information such as received / sent messages are displayed to `stdout`.
 
-In addition, when Debug mode is enabled, all outgoing messages will have their `bot_id` set to `process.env.DEBUG_BOT_ID`. This is to allow messages to be sent to a secondary chat group for testing purposes.
-
-Requests may also include the query parameter `debug` set to any value in order to change output messages' `bot_id` property to `process.env.DEBUG_BOT_ID` before sending.
+`POST` requests may include the query parameter `debug` set to any value in order to change output messages' `bot_id` property to `process.env.DEBUG_BOT_ID` before sending. This is useful for sending messages to a separate chat for testing purposes.

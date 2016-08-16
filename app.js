@@ -14,7 +14,7 @@ function submit(body) {
 
 // runner? I hardly know her!
 const runner = new BotRunner(submit, {
-    debug: process.env.BOT_DEBUG,
+    verbose: process.env.BOT_VERBOSE,
     debugBotId: process.env.DEBUG_BOT_ID
 });
 

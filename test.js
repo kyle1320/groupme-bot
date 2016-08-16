@@ -33,10 +33,10 @@ assert.equal(artkalbTest2.text, 'longererer? I hardly know her!');
 var artkalbTest3 = artkalb.consult({text: 'chamber'});
 assert(!artkalbTest3);
 
-// test Bot Runner in debug mode
+// test Bot Runner in verbose mode
 
 var testBotRunner = new BotRunner(function(){}, {
-    debug: true,
+    verbose: true,
     debugBotId: 'debugid'
 });
 testBotRunner.addBot(artkalb);
@@ -77,8 +77,8 @@ testRequest(
     );
 }).then(function(msgs) {
     assert.equal(msgs.length, 1);
-    assert.equal(msgs[0].text, 'harambe: Dicks out for Harambe!');
-    assert.equal(msgs[0].bot_id, 'debugid');
+    assert.equal(msgs[0].text, 'Dicks out for Harambe!');
+    assert.equal(msgs[0].bot_id, 'harambeid');
 }).then(function() {
     return testRequest(
         '/all',
@@ -87,19 +87,19 @@ testRequest(
 }).then(function(msgs) {
     assert.equal(msgs.length, 2);
 
-    if (msgs[0].text === 'harambe: Dicks out for Harambe!') {
-        assert.equal(msgs[1].text, 'artkalb: haramberger? I hardly know her!');
+    if (msgs[0].text === 'Dicks out for Harambe!') {
+        assert.equal(msgs[1].text, 'haramberger? I hardly know her!');
     } else {
-        assert.equal(msgs[0].text, 'artkalb: haramberger? I hardly know her!');
-        assert.equal(msgs[1].text, 'harambe: Dicks out for Harambe!');
+        assert.equal(msgs[0].text, 'haramberger? I hardly know her!');
+        assert.equal(msgs[1].text, 'Dicks out for Harambe!');
     }
 }).then(function() {
     testBotRunner.close();
 
-    // test Bot Runner in non-debug mode
+    // test Bot Runner in non-verbose mode
 
     testBotRunner = new BotRunner(function(){}, {
-        debug: false,
+        verbose: false,
         debugBotId: 'debugid'
     });
     testBotRunner.addBot(artkalb);
@@ -141,13 +141,13 @@ testRequest(
     }
 }).then(function() {
     return testRequest(
-        '/artkalb',
+        '/artkalb?debug',
         {'text': 'pumpernickel overachiever'}
     );
 }).then(function(msgs) {
     assert.equal(msgs.length, 1);
-    assert.equal(msgs[0].text, 'Pump \'er Nickel? I hardly know her!');
-    assert.equal(msgs[0].bot_id, 'artkalbid');
+    assert.equal(msgs[0].text, 'artkalb: Pump \'er Nickel? I hardly know her!');
+    assert.equal(msgs[0].bot_id, 'debugid');
 }).then(function() {
     return testRequest(
         '/harambe?debug',
