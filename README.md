@@ -2,11 +2,11 @@
 Runs a Node.js server that allows "bots" to listen for, and reply to, GroupMe messages. The main program can be started using the command `node app.js`, or optionally, `node start`.
 
 ## Bots
-Bots provide the mechanism to parse and reply to posted messages. Each bot module must have three exports:
+Bots provide the mechanism to parse and reply to posted messages. Each bot module must have two exports:
 
   * **name:** A unique identifier for the bot. This is the path a POST request must follow to reach this bot, so it must be a valid URL path.
-  * **id:** The GroupMe bot ID that this bot will use when posting.
-  * **consult:** A function that takes a GroupMe message as its only argument, and may return nothing, if no message is to be posted, or may return an object with the following properties in order to post a message:
+  * **consult:** A function that takes a GroupMe message as its only argument, and may return nothing, if no message is to be posted, or may return a GroupMe compatible object in order to post a message. These are some common properties:
+    * **bot_id:** The GroupMe bot ID to use when posting 
     * **text:** The text to display in the posted message
 
 ## BotRunner
@@ -30,3 +30,5 @@ Debug mode can be enabled by setting the environment variable `BOT_DEBUG` to any
 In Debug mode, information such as received / sent messages are displayed to `stdout`.
 
 In addition, when Debug mode is enabled, all outgoing messages will have their `bot_id` set to `process.env.DEBUG_BOT_ID`. This is to allow messages to be sent to a secondary chat group for testing purposes.
+
+Requests may also include the query parameter `debug` set to any value in order to change output messages' `bot_id` property to `process.env.DEBUG_BOT_ID` before sending.

@@ -8,7 +8,6 @@ const MSG_DELAY = +process.env.ARTKALB_DELAY || 1000 * 60 * 10;
 var lastMsgTime = 0;
 
 exports.name = 'artkalb';
-exports.id = process.env.ARTKALB_BOT_ID;
 
 exports.consult = function(msg) {
 
@@ -42,6 +41,7 @@ function makePun(word) {
     lastMsgTime = Date.now();
 
     return {
+	'bot_id': process.env.ARTKALB_BOT_ID,
         'text': word + '? I hardly know her!'
     };
 }

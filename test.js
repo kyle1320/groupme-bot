@@ -4,7 +4,7 @@ process.env.HARAMBE_BOT_ID = 'harambeid';
 process.env.ARTKALB_BOT_ID = 'artkalbid';
 process.env.ARTKALB_DELAY = 1500;
 
-var BotRunner = require('./BotRunner');
+var BotRunner = require('./botrunner');
 var harambe = require('./bots/harambe');
 var artkalb = require('./bots/artkalb');
 
@@ -123,21 +123,21 @@ testRequest(
     assert.equal(msgs[0].bot_id, 'harambeid');
 }).then(function() {
     return testRequest(
-        '/all',
+        '/all?debug',
         {'text': 'haramberger'}
     );
 }).then(function(msgs) {
     assert.equal(msgs.length, 2);
 
-    if (msgs[0].text === 'Dicks out for Harambe!') {
-        assert.equal(msgs[0].bot_id, 'harambeid');
-        assert.equal(msgs[1].text, 'haramberger? I hardly know her!');
-        assert.equal(msgs[1].bot_id, 'artkalbid');
+    if (msgs[0].text === 'harambe: Dicks out for Harambe!') {
+        assert.equal(msgs[0].bot_id, 'debugid');
+        assert.equal(msgs[1].text, 'artkalb: haramberger? I hardly know her!');
+        assert.equal(msgs[1].bot_id, 'debugid');
     } else {
-        assert.equal(msgs[0].text, 'haramberger? I hardly know her!');
-        assert.equal(msgs[0].bot_id, 'artkalbid');
-        assert.equal(msgs[1].text, 'Dicks out for Harambe!');
-        assert.equal(msgs[1].bot_id, 'harambeid');
+        assert.equal(msgs[0].text, 'artkalb: haramberger? I hardly know her!');
+        assert.equal(msgs[0].bot_id, 'debugid');
+        assert.equal(msgs[1].text, 'harambe: Dicks out for Harambe!');
+        assert.equal(msgs[1].bot_id, 'debugid');
     }
 }).then(function() {
     return testRequest(
@@ -148,6 +148,15 @@ testRequest(
     assert.equal(msgs.length, 1);
     assert.equal(msgs[0].text, 'Pump \'er Nickel? I hardly know her!');
     assert.equal(msgs[0].bot_id, 'artkalbid');
+}).then(function() {
+    return testRequest(
+        '/harambe?debug',
+        {'text': 'harambe'}
+    );
+}).then(function(msgs) {
+    assert.equal(msgs.length, 1);
+    assert.equal(msgs[0].text, 'harambe: Dicks out for Harambe!');
+    assert.equal(msgs[0].bot_id, 'debugid');
 }).then(function() {
     testBotRunner.close();
 

@@ -66,9 +66,21 @@ BotRunner.prototype.consult = function(bot, req) {
     if (this.options.debug) {
         console.log(bot.name + ' received message, returned', msg);
     }
-
+ 	
     if (msg) {
-        this.say(msg, bot);
+
+        // if debugging, use the debug bot ID and say which bot
+        // the message is coming from.
+	if (this.options.debug || 'debug' in req.query) {
+            msg.bot_id = this.options.debugBotId;
+            msg.text = bot.name + ': ' + msg.text;
+	}
+
+        if (this.options.debug) {
+            console.log('response', msg, 'from ' + bot.name);
+        }
+
+        this.submit(msg);
     }
 };
 
@@ -98,28 +110,6 @@ BotRunner.prototype.addBot = function(bot) {
     }
 
     this.bots.set(bot.name, bot);
-};
-
-// forms the GroupMe-compatible object and calls the submit function with it.
-BotRunner.prototype.say = function(msg, bot) {
-    if (typeof msg !== 'object') return;
-    if (typeof bot !== 'object') return;
-
-    var body = {
-        'bot_id': bot.id,
-        'text': msg.text
-    };
-
-    if (this.options.debug) {
-        console.log('response', msg, 'from ' + bot.name);
-
-        // if debugging, use the debug bot ID and say which bot
-        // the message is coming from.
-        body.bot_id = this.options.debugBotId;
-        body.text = bot.name + ': ' + body.text;
-    }
-
-    this.submit(body);
 };
 
 // opens the server
