@@ -1,5 +1,7 @@
 const https = require('https');
 const BotRunner = require('./botrunner');
+const HarambeBot = require('./bots/harambe');
+const ArtKalbBot = require('./bots/artkalb');
 
 const postOptions = {
     hostname: 'api.groupme.com',
@@ -18,7 +20,29 @@ const runner = new BotRunner(submit, {
     debugBotId: process.env.DEBUG_BOT_ID
 });
 
-runner.addBot(require('./bots/harambe'));
-runner.addBot(require('./bots/artkalb'));
+// parse the special cases for artkalb bot
+var specialCases = undefined;
+try {
+    specialCases = JSON.parse(process.env.ARTKALB_SPECIAL_CASES);
+    if (!(specialCases instanceof Array)) specialCases = undefined;
+    else {
+        for (var i = 0; i < specialCases.length; i += 2) {
+            specialCases[i] = new RegExp(specialCases[i], 'ig');
+        }
+    }
+} catch (e) {
+    console.log(e);
+}
+
+const artkalb = new ArtKalbBot(
+    process.env.ARTKALB_BOT_ID,
+    process.env.ARTKALB_MSG_DELAY,
+    specialCases
+);
+
+const harambe = new HarambeBot(process.env.HARAMBE_BOT_ID);
+
+runner.addBot(harambe);
+runner.addBot(artkalb);
 
 runner.listen(process.env.PORT);

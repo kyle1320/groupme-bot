@@ -66,15 +66,15 @@ BotRunner.prototype.consult = function(bot, req) {
     if (this.options.verbose) {
         console.log(bot.name + ' received message, returned', msg);
     }
- 	
+
     if (msg) {
 
         // if debugging, use the debug bot ID and say which bot
         // the message is coming from.
-	if ('debug' in req.query) {
+        if ('debug' in req.query) {
             msg.bot_id = this.options.debugBotId;
             msg.text = bot.name + ': ' + msg.text;
-	}
+        }
 
         if (this.options.verbose) {
             console.log('response', msg, 'from ' + bot.name);
