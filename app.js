@@ -1,3 +1,5 @@
+'use strict';
+
 const https = require('https');
 const BotRunner = require('./botrunner');
 const HarambeBot = require('./bots/harambe');
@@ -10,8 +12,9 @@ const postOptions = {
 };
 
 function submit(body) {
-    var req = https.request(postOptions);
-    req.end(JSON.stringify(body));
+    // var req = https.request(postOptions);
+    // req.end(JSON.stringify(body));
+    console.log(body);
 }
 
 // runner? I hardly know her!

@@ -1,3 +1,4 @@
+'use strict';
 
 // Bots should extend this class and override consult().
 module.exports = class Bot {

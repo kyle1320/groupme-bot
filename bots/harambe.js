@@ -1,3 +1,5 @@
+'use strict';
+
 var Bot = require('./bot');
 
 module.exports = class Harambe extends Bot {
