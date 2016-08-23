@@ -12,9 +12,8 @@ const postOptions = {
 };
 
 function submit(body) {
-    // var req = https.request(postOptions);
-    // req.end(JSON.stringify(body));
-    console.log(body);
+    var req = https.request(postOptions);
+    req.end(JSON.stringify(body));
 }
 
 // runner? I hardly know her!
