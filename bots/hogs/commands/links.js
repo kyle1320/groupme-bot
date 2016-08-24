@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function (args) {
     return `Website: hogs.rit.edu`
 };

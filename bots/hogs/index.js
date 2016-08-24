@@ -1,3 +1,5 @@
+'use strict';
+
 const Bot = require('../bot');
 const commands = require('./commands');
 
