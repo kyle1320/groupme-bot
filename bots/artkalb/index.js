@@ -47,7 +47,7 @@ module.exports = class ArtKalb extends Bot {
         var realMatches = msg.text.match(realPunRegExp);
         if (realMatches) {
             realMatches = realMatches.filter(function(word) {
-                return word in verbs;
+                return word.toLowerCase() in verbs;
             });
 
             matches = matches.concat(realMatches);

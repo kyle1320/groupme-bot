@@ -1,5 +1,3 @@
-'use strict';
-
 var assert = require('assert');
 
 var BotRunner = require('./botrunner');
@@ -29,9 +27,9 @@ assert(!artkalbTest1);
 var artkalbTest2 = artkalb.consult({text: 'abcer'});
 assert(!artkalbTest2);
 
-var artkalbTest3 = artkalb.consult({text: 'nailer longererer'});
+var artkalbTest3 = artkalb.consult({text: 'NaIler wiper'});
 assert(artkalbTest3);
-assert.equal(artkalbTest3.text, 'longererer? I hardly know her!');
+assert.equal(artkalbTest3.text, 'NaIler? I hardly know her!');
 
 var artkalbTest4 = artkalb.consult({text: 'creater'});
 assert(!artkalbTest4);
