@@ -6,7 +6,7 @@ Bots provide the mechanism to parse and reply to posted messages. Bots should ex
 
   * **name:** A unique identifier for the bot. This is the path a POST request must follow to reach this bot, so it must be a valid URL path.
   * **id:** The GroupMe bot ID to use when posting
-  * **consult:** A function that takes a GroupMe message as its only argument, and may return nothing, if no message is to be posted, or may return a GroupMe compatible object in order to post a message. Must be overridden by subclasses. These are some common properties of the message object:
+  * **consult:** A function that takes a GroupMe message as its only argument, and may return nothing, if no message is to be posted, or may return a GroupMe compatible object in order to post a message. Must be overridden by subclasses. It may also return a Promise that resolves to ones of these values, in which case the message will be processed after the Promise is resolved. These are some common properties of the message object:
     * **text:** The text to display in the posted message
 
 ## BotRunner

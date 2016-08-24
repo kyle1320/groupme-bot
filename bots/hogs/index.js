@@ -18,11 +18,16 @@ module.exports = class HogsBot extends Bot {
             var cmd = args.splice(0, 1)[0];
 
             if (cmd in commands) {
-                var text = commands[cmd](args);
+                var self = this;
 
-                if (text) {
-                    return this.makeMessage(text);
-                }
+                return Promise.resolve(commands[cmd](args))
+                    .then(function(text) {
+                        if (text) {
+
+                            // insert > to make text quoted / monospace
+                            return self.makeMessage('>' + text);
+                        }
+                    });
             }
         }
     }

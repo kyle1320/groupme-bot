@@ -61,27 +61,27 @@ function BotRunner(submit, options) {
 // consults the given bot using the given request, and processes the message
 // if one is returned.
 BotRunner.prototype.consult = function(bot, req) {
-    var msg = bot.consult(req.body);
+    var self = this;
 
-    if (this.options.verbose) {
-        console.log(bot.name + ' received message, returned', msg);
-    }
+    Promise.resolve(bot.consult(req.body))
+        .then(function(msg) {
+            if (self.options.verbose) {
+                console.log(bot.name + ' received message, returned', msg);
+            }
 
-    if (msg) {
+            if (msg) {
 
-        // if debugging, use the debug bot ID and say which bot
-        // the message is coming from.
-    if ('debug' in req.query) {
-            msg.bot_id = this.options.debugBotId;
-            msg.text = bot.name + ': ' + msg.text;
-    }
+                // if debugging, use the debug bot ID and say which bot
+                // the message is coming from.
+                if ('debug' in req.query) {
+                    msg.bot_id = self.options.debugBotId;
+                    msg.text = bot.name + ': ' + msg.text;
+                }
 
-        if (this.options.verbose) {
-            console.log('response', msg, 'from ' + bot.name);
-        }
-
-        this.submit(msg);
-    }
+                self.submit(msg);
+            }
+        })
+        .catch(console.error);
 };
 
 // processes the given request and determines whether it should
