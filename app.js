@@ -2,6 +2,8 @@
 
 const https = require('https');
 const BotRunner = require('./botrunner');
+
+const HogsBot = require('./bots/hogs');
 const HarambeBot = require('./bots/harambe');
 const ArtKalbBot = require('./bots/artkalb');
 
@@ -36,14 +38,15 @@ try {
     console.log(e);
 }
 
+const hogs = new HogsBot(process.env.HOGS_BOT_ID || 'hogsid');
+const harambe = new HarambeBot(process.env.HARAMBE_BOT_ID);
 const artkalb = new ArtKalbBot(
     process.env.ARTKALB_BOT_ID,
     process.env.ARTKALB_MSG_DELAY,
     specialCases
 );
 
-const harambe = new HarambeBot(process.env.HARAMBE_BOT_ID);
-
+runner.addBot(hogs);
 runner.addBot(harambe);
 runner.addBot(artkalb);
 
