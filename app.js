@@ -38,7 +38,7 @@ try {
     console.log(e);
 }
 
-const hogs = new HogsBot(process.env.HOGS_BOT_ID || 'hogsid');
+const hogs = new HogsBot(process.env.HOGS_BOT_ID);
 const harambe = new HarambeBot(process.env.HARAMBE_BOT_ID);
 const artkalb = new ArtKalbBot(
     process.env.ARTKALB_BOT_ID,
