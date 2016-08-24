@@ -1,7 +1,8 @@
 'use strict';
 
 module.exports = function (args) {
-    return 'This is a test\nThis is a test';
+    return `This is a test\nThis is a test`;
 };
 
-module.exports.helpString = 'Test function.';
+module.exports.helpString =
+`Test function.`;
