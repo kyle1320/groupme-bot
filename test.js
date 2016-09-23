@@ -19,6 +19,10 @@ assert.equal(harambeTest2.text, 'Dicks out for Harambe!');
 var harambeTest3 = harambe.consult({text: 'nothing :('});
 assert(!harambeTest3);
 
+var harambeTest4 = harambe.consult({text: 'nothing', name: 'I am harambe!'});
+assert(harambeTest4);
+assert.equal(harambeTest4.text, 'Harambe lives!');
+
 // test Art Kalb bot
 
 var artkalbTest1 = artkalb.consult({text: 'nothing :('});
