@@ -64,21 +64,27 @@ BotRunner.prototype.consult = function(bot, req) {
     var self = this;
 
     Promise.resolve(bot.consult(req.body))
-        .then(function(msg) {
+        .then(function(msgs) {
             if (self.options.verbose) {
-                console.log(bot.name + ' received message, returned', msg);
+                console.log(bot.name + ' received message, returned', msgs);
             }
 
-            if (msg) {
-
-                // if debugging, use the debug bot ID and say which bot
-                // the message is coming from.
-                if ('debug' in req.query) {
-                    msg.bot_id = self.options.debugBotId;
-                    msg.text = bot.name + ': ' + msg.text;
+            if (msgs) {
+                // make sure msgs is an Array.
+                if (!(msgs instanceof Array)) {
+                    msgs = [msgs];
                 }
 
-                self.submit(msg);
+                msgs.forEach(function (msg) {
+                    // if debugging, use the debug bot ID and say which bot
+                    // the message is coming from.
+                    if ('debug' in req.query) {
+                        msg.bot_id = self.options.debugBotId;
+                        msg.text = bot.name + ': ' + msg.text;
+                    }
+
+                    self.submit(msg);
+                });
             }
         })
         .catch(console.error);

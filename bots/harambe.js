@@ -8,12 +8,16 @@ module.exports = class Harambe extends Bot {
     }
 
     consult (msg) {
-        if (msg.text && msg.text.match(/harambe/i)) {
-            return this.makeMessage('Dicks out for Harambe!');
-        }
+        var responses = [];
 
         if (msg.name && msg.name.match(/harambe/i)) {
-            return this.makeMessage('Harambe lives!');
+            responses.push(this.makeMessage('Harambe lives!'));
         }
+
+        if (msg.text && msg.text.match(/harambe/i)) {
+            responses.push(this.makeMessage('Dicks out for Harambe!'));
+        }
+
+        return responses;
     }
 };

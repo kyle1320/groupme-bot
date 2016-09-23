@@ -6,22 +6,52 @@ var artkalb = new (require('./bots/artkalb'))('artkalbid', 1500, [
     /blahblah\b/gi, "BlahBlahBlah"
 ]);
 
+function checkMessages(msgs, ...contents) {
+    assert.equal(msgs.length, contents.length);
+
+    assert(contents.every(function (content) {
+        var index = msgs.findIndex(function (msg) {
+            return msg.text === content.text;
+        });
+
+        if (index >= 0) {
+            var msg = msgs.splice(index, 1)[0];
+
+            for (var key in content) {
+                assert.equal(msg[key], content[key]);
+            }
+        }
+
+        return index >= 0;
+    }));
+}
+
 // test Harambe bot
 
 var harambeTest1 = harambe.consult({text: 'harambe'});
 assert(harambeTest1);
-assert.equal(harambeTest1.text, 'Dicks out for Harambe!');
+assert.equal(harambeTest1.length, 1);
+assert.equal(harambeTest1[0].text, 'Dicks out for Harambe!');
 
 var harambeTest2 = harambe.consult({text: 'cHaraMber alwhna'});
 assert(harambeTest2);
-assert.equal(harambeTest2.text, 'Dicks out for Harambe!');
+assert.equal(harambeTest2.length, 1);
+assert.equal(harambeTest2[0].text, 'Dicks out for Harambe!');
 
 var harambeTest3 = harambe.consult({text: 'nothing :('});
-assert(!harambeTest3);
+assert.equal(harambeTest3.length, 0);
 
 var harambeTest4 = harambe.consult({text: 'nothing', name: 'I am harambe!'});
 assert(harambeTest4);
-assert.equal(harambeTest4.text, 'Harambe lives!');
+assert.equal(harambeTest4.length, 1);
+assert.equal(harambeTest4[0].text, 'Harambe lives!');
+
+var harambeTest5 = harambe.consult({text: 'aaaharambea', name: 'I am harambe!'});
+assert(harambeTest5);
+checkMessages(harambeTest5,
+    {text: 'Harambe lives!'},
+    {text: 'Dicks out for Harambe!'}
+);
 
 // test Art Kalb bot
 
@@ -90,14 +120,10 @@ testRequest(
         {'text': 'harambe translator'}
     );
 }).then(function(msgs) {
-    assert.equal(msgs.length, 2);
-
-    if (msgs[0].text === 'Dicks out for Harambe!') {
-        assert.equal(msgs[1].text, 'translator? I hardly know her!');
-    } else {
-        assert.equal(msgs[0].text, 'translator? I hardly know her!');
-        assert.equal(msgs[1].text, 'Dicks out for Harambe!');
-    }
+    checkMessages(msgs,
+        {text: 'Dicks out for Harambe!'},
+        {text: 'translator? I hardly know her!'}
+    );
 }).then(function() {
     testBotRunner.close();
 
@@ -129,21 +155,14 @@ testRequest(
 }).then(function() {
     return testRequest(
         '/all?debug',
-        {'text': 'harambe translator'}
+        {'text': 'harambe translator', 'name': 'harambee'}
     );
 }).then(function(msgs) {
-    assert.equal(msgs.length, 2);
-
-    if (msgs[0].text === 'harambe: Dicks out for Harambe!') {
-        assert.equal(msgs[0].bot_id, 'debugid');
-        assert.equal(msgs[1].text, 'artkalb: translator? I hardly know her!');
-        assert.equal(msgs[1].bot_id, 'debugid');
-    } else {
-        assert.equal(msgs[0].text, 'artkalb: translator? I hardly know her!');
-        assert.equal(msgs[0].bot_id, 'debugid');
-        assert.equal(msgs[1].text, 'harambe: Dicks out for Harambe!');
-        assert.equal(msgs[1].bot_id, 'debugid');
-    }
+    checkMessages(msgs,
+        {text: 'harambe: Dicks out for Harambe!', bot_id: 'debugid'},
+        {text: 'harambe: Harambe lives!', bot_id: 'debugid'},
+        {text: 'artkalb: translator? I hardly know her!', bot_id: 'debugid'}
+    );
 }).then(function() {
     return testRequest(
         '/artkalb?debug',
@@ -166,4 +185,6 @@ testRequest(
     testBotRunner.close();
 
     console.log('passed all tests');
+}).catch(function (err) {
+    console.error(err);
 });
