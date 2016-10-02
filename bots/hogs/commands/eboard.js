@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function (args) {
     return `* President: Marc Caceres (mxc6318@rit.edu)
 * Vice President: Felix Brink (fab1047@rit.edu)

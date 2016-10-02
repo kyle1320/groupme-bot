@@ -1,3 +1,5 @@
+'use strict';
+
 var https = require('http');
 var twitter = require('twitter')({
     consumer_key: process.env.TWITTER_API_KEY,
