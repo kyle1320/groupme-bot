@@ -5,7 +5,8 @@ module.exports = {
     test: require('./test'),
     links: require('./links'),
     eboard: require('./eboard'),
-    free: require('./free')
+    free: require('./free'),
+    events: require('./events')
 };
 
 // we must require help separately, since it uses the commands object.
