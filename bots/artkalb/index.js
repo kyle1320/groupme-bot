@@ -1,7 +1,7 @@
 'use strict';
 
 const Bot = require('../bot');
-const verbs = require('./verbs');
+const verbs = require('./verbs8');
 
 // the regular expression used to test for "real puns" in messages.
 // these will be filtered according to the verb dictionary.
