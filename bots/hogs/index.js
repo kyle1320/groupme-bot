@@ -4,11 +4,11 @@ const Bot = require('../bot');
 const commands = require('./commands');
 
 module.exports = class HogsBot extends Bot {
-    constructor(id) {
+    constructor (id) {
         super('hogs', id);
     }
 
-    consult(msg) {
+    consult (msg) {
 
         // if the message text begins with ! or /, interpret it as a command
         if (/^[!\/]/.test(msg.text)) {
@@ -21,12 +21,16 @@ module.exports = class HogsBot extends Bot {
                 var self = this;
 
                 return Promise.resolve(commands[cmd](args))
-                    .then(function(text) {
+                    .then(function (text) {
                         if (text) {
 
                             // insert > to make text quoted / monospace
                             return self.makeMessage('>' + text);
                         }
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                        return self.makeMessage('>Sorry, something went wrong.');
                     });
             }
         }
