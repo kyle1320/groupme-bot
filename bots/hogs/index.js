@@ -15,7 +15,7 @@ module.exports = class HogsBot extends Bot {
 
             // split arguments by whitespace
             var args = msg.text.substring(1).split(/\s+/);
-            var cmd = args.splice(0, 1)[0];
+            var cmd = args.splice(0, 1)[0].toLowerCase();
 
             if (cmd in commands) {
                 var self = this;
