@@ -1,6 +1,7 @@
 'use strict';
 
 var https = require('https');
+var time = require('time');
 
 var calendarID = process.env.HOGS_CALENDAR_ID;
 var key = process.env.GOOGLE_API_KEY;
@@ -55,7 +56,7 @@ module.exports = function (args) {
                         if (i > 0) info += '\n';
 
                         info += '\n  ' + events[i].summary +
-                        '\n  ' + formatDate(new Date(events[i].start.dateTime));
+                        '\n  ' + formatDate(new time.Date(events[i].start.dateTime));
 
                         if (events[i].location) {
                             info += '\n  '+events[i].location;
@@ -78,6 +79,10 @@ module.exports = function (args) {
 //     "(dayname), (month) (date)", otherwise.
 // and (time) is "H:MM(AM or PM)" or just "H(AM or PM)".
 function formatDate(then) {
+
+    // Use eastern time
+    then.setTimezone('America/New_York');
+
     var now = new Date();
     var diff = then.getTime() - now.getTime();
     var date, time;
