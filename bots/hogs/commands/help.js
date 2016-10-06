@@ -10,7 +10,7 @@ module.exports = function (args) {
 
         // remove leading ! or /
         if (/^[!\/]/.test(cmd)) {
-            cmd = cmd.substring(1);
+            cmd = cmd.substring(1).toLowerCase();
         }
 
         if (cmd in commands) {
