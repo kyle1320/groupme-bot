@@ -6,11 +6,11 @@ module.exports = function (args) {
 
     // give specific command information
     if (args.length) {
-        var cmd = args[0];
+        var cmd = args[0].toLowerCase();
 
         // remove leading ! or /
         if (/^[!\/]/.test(cmd)) {
-            cmd = cmd.substring(1).toLowerCase();
+            cmd = cmd.substring(1);
         }
 
         if (cmd in commands) {
