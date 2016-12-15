@@ -1,3 +1,5 @@
+'use strict';
+
 var time = require('time');
 
 var dayNames = [

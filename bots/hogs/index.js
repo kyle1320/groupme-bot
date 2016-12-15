@@ -4,14 +4,17 @@ const Bot = require('../bot');
 const commands = require('./commands');
 
 module.exports = class HogsBot extends Bot {
-    constructor (id) {
-        super('hogs', id);
+    constructor (id, submit) {
+        super('hogs', id, submit);
     }
 
     consult (msg) {
 
         // if the message text begins with ! or /, interpret it as a command
         if (/^[!\/]/.test(msg.text)) {
+
+            // twim whitespace
+            msg.text = msg.text.trim();
 
             // split arguments by whitespace
             var args = msg.text.substring(1).split(/\s+/);
@@ -20,18 +23,25 @@ module.exports = class HogsBot extends Bot {
             if (cmd in commands) {
                 var self = this;
 
-                return Promise.resolve(commands[cmd](args))
-                    .then(function (text) {
+                var result = commands[cmd](args);
+
+                if (result instanceof Promise) {
+                    return result.then(function (text) {
                         if (text) {
 
                             // insert > to make text quoted / monospace
-                            return self.makeMessage('>' + text);
+                            self.post('>' + text);
                         }
                     })
                     .catch(function (err) {
                         console.log(err);
-                        return self.makeMessage('>Sorry, something went wrong.');
+                        self.post('>Sorry, something went wrong.');
                     });
+                } else if (result) {
+
+                    // insert > to make text quoted / monospace
+                    self.post('>' + result);
+                }
             }
         }
     }

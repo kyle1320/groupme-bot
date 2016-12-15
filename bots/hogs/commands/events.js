@@ -57,6 +57,7 @@ module.exports = function (args) {
 
                     resolve(info);
                 } catch (e) {
+                    console.log(body);
                     reject(e);
                 }
             });

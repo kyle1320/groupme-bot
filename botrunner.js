@@ -1,48 +1,19 @@
+'use strict';
+
 const express = require('express');
-const https = require('https');
 const bodyParser = require('body-parser');
+const Bot = require('./bots/bot');
 
 module.exports = BotRunner;
 
-// A BotRunner listens for POST requests, forwards them to bots registered
-// under it, and submits their responses to a given function.
-// submit is the function to be called when the bot says something.
-// options is an object that may contain the following keys:
-//   verbose:       Whether to print debug messages, etc.
-//   debugBotId:    The bot id to use when sending messages in debug mode.
-//                  This overrides any default bot ids.
-function BotRunner(submit, options) {
-    if (typeof submit !== 'function') {
-        throw new TypeError('submit must be a function');
-    }
-
-    // if options wasn't given, use a default object
-    options = options || {
-        verbose: false,
-        debugBotId: undefined
-    };
-
-    if (typeof options !== 'object') {
-        throw new TypeError('options must be an object');
-    }
-
-    this.submit = submit;
-    this.options = options;
+// A BotRunner listens for POST requests and calls the bots registered to it.
+function BotRunner() {
     this.bots = new Map();
 
     var self = this;
 
-    this.app = express();
+    this.app = new express();
     this.app.use(bodyParser.json());
-    this.app.post('/all', function(req, res) {
-        if (self.preprocess(req)) {
-            for (var bot of self.bots.values()) {
-                self.consult(bot, req);
-            }
-        }
-
-        res.end();
-    });
     this.app.post('/:botName', function(req, res) {
         if (self.preprocess(req)) {
             var botName = req.params.botName;
@@ -50,45 +21,13 @@ function BotRunner(submit, options) {
             if (self.bots.has(botName)) {
                 var bot = self.bots.get(botName);
 
-                self.consult(bot, req);
+                bot.consult(req.body);
             }
         }
 
         res.end();
     });
-};
-
-// consults the given bot using the given request, and processes the message
-// if one is returned.
-BotRunner.prototype.consult = function(bot, req) {
-    var self = this;
-
-    Promise.resolve(bot.consult(req.body))
-        .then(function(msgs) {
-            if (self.options.verbose) {
-                console.log(bot.name + ' received message, returned', msgs);
-            }
-
-            if (msgs) {
-                // make sure msgs is an Array.
-                if (!(msgs instanceof Array)) {
-                    msgs = [msgs];
-                }
-
-                msgs.forEach(function (msg) {
-                    // if debugging, use the debug bot ID and say which bot
-                    // the message is coming from.
-                    if ('debug' in req.query) {
-                        msg.bot_id = self.options.debugBotId;
-                        msg.text = bot.name + ': ' + msg.text;
-                    }
-
-                    self.submit(msg);
-                });
-            }
-        })
-        .catch(console.error);
-};
+}
 
 // processes the given request and determines whether it should
 // go to a bot. Returns true if the request is bot-worthy, false otherwise.
@@ -97,36 +36,19 @@ BotRunner.prototype.preprocess = function(req) {
     if (typeof req.body !== 'object') return false;
     if (typeof req.body.text !== 'string') return false;
 
-    if (this.options.verbose) {
-        console.log('message', req.body, 'to ' + req.url);
-    }
-
     // make sure we don't get any infinite bot loops...
-    if (req.body.sender_type !== 'bot') {
-        return true;
+    if (req.body.sender_type === 'bot') {
+        return false;
     }
 
-    return false;
+    return true;
 };
 
 // register a new bot
 BotRunner.prototype.addBot = function(bot) {
-    if (typeof bot !== 'object') {
-        throw new TypeError('bot must be an object');
+    if (!(bot instanceof Bot)) {
+        throw new TypeError('bot must be an instance of the Bot class');
     }
 
     this.bots.set(bot.name, bot);
 };
-
-// opens the server
-BotRunner.prototype.listen = function(port) {
-    this.server = this.app.listen(port || 3000);
-};
-
-// closes the server
-BotRunner.prototype.close = function() {
-    if (this.server) {
-        this.server.close();
-        this.server = null;
-    }
-}
