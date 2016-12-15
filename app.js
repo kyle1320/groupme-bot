@@ -24,4 +24,4 @@ runner.addBot(new HogsBot   (process.env.HOGS_BOT_ID,    postMessage));
 runner.addBot(new HarambeBot(process.env.HARAMBE_BOT_ID, postMessage));
 runner.addBot(new ArtKalbBot(process.env.ARTKALB_BOT_ID, postMessage));
 
-runner.app.listen(process.env.PORT);
+runner.listen(process.env.PORT);

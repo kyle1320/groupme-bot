@@ -170,7 +170,7 @@ testBot(
 
 console.log('====================\nRunning http tests...\n====================');
 
-var testServer = testBotRunner.app.listen(3000);
+testBotRunner.listen(3000);
 
 testRequest(
     '/artkalb',
@@ -202,7 +202,7 @@ testRequest(
         {bot_id: 'hogsid', text: '>>>> 5+5\n10'}
     );
 }).then(function() {
-    testServer.close();
+    testBotRunner.close();
 
     console.log('passed all tests');
 }).catch(function (err) {

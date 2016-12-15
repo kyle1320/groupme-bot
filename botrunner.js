@@ -52,3 +52,14 @@ BotRunner.prototype.addBot = function(bot) {
 
     this.bots.set(bot.name, bot);
 };
+
+BotRunner.prototype.listen = function (port) {
+    this.server = this.app.listen(port);
+};
+
+BotRunner.prototype.close = function () {
+    if (this.server) {
+        this.server.close();
+        this.server = null;
+    }
+};
