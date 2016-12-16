@@ -21,7 +21,7 @@ module.exports = class ArtKalb extends Bot {
             if (!(this.specialCases instanceof Array)) this.specialCases = [];
             else {
                 for (var i = 0; i < this.specialCases.length; i += 2) {
-                    this.specialCases[i] = new RegExp(this.specialCases[i], 'ig');
+                    this.specialCases[i] = new RegExp(this.specialCases[i], 'i');
                 }
             }
         } catch (e) {

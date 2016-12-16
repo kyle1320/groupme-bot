@@ -4,7 +4,7 @@ const assert = require('assert');
 const BotRunner = require('./botrunner');
 const http = require('http');
 
-process.env.ARTKALB_MESSAGE_DELAY = 1500;
+process.env.ARTKALB_MESSAGE_DELAY = 150;
 process.env.ARTKALB_SPECIAL_CASES = '["blahblah\\\\b", "BlahBlahBlah"]';
 
 var messages = [];
@@ -52,7 +52,7 @@ function testBot(bot, body, ...responses) {
     checkMessages.apply(null, responses);
 }
 
-function testRequest(path, body, ...responses) {
+function testRequest(path, body, delay, ...responses) {
     console.log("POST", path, body);
     return new Promise(function(resolve, reject) {
         var arr = [];
@@ -68,7 +68,7 @@ function testRequest(path, body, ...responses) {
                 'Content-Type': 'application/json'
             }
         }).end(JSON.stringify(body));
-        setTimeout(function() {resolve(arr)}, 1000);
+        setTimeout(function() {resolve(arr)}, delay);
     }).then(function () {
         checkMessages.apply(null, responses);
     });
@@ -174,17 +174,20 @@ testBotRunner.listen(3000);
 
 testRequest(
     '/artkalb',
-    {text: 'hello'}
+    {text: 'hello'},
+    100
 ).then(function() {
     return testRequest(
         '/harambe',
         {text: 'harambe'},
+        100,
         {bot_id: 'harambeid', text: 'Dicks out for Harambe!'}
     );
 }).then(function() {
     return testRequest(
         '/debug',
         {text: '/help harambe translator'},
+        100,
         {bot_id: 'debugid', text: 'harambe: Dicks out for Harambe!'},
         {bot_id: 'debugid', text: 'artkalb: translator? I hardly know her!'},
         {bot_id: 'debugid', text: /^hogs\: /}
@@ -193,12 +196,21 @@ testRequest(
     return testRequest(
         '/artkalb',
         {text: 'blahblah vibrator'},
+        200,
+        {bot_id: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
+    );
+}).then(function() {
+    return testRequest(
+        '/artkalb',
+        {text: 'blahblah vibrator'},
+        100,
         {bot_id: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
     );
 }).then(function() {
     return testRequest(
         '/hogs',
         {text: '/eval 5+5'},
+        100,
         {bot_id: 'hogsid', text: '>>>> 5+5\n10'}
     );
 }).then(function() {
