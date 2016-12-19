@@ -15,11 +15,11 @@ A Bot constructor should take two arguments:
   * **submit:** The function to be called when the bot posts a message. Should handle "posting" of the message (such as sending the message to GroupMe).
 
 ## BotRunner
-The BotRunner module allows for the instantiation of a server that may run several bots simultaneously.
+The botRunner function allows for the creation of an express.js Router that may run several bots simultaneously.
 
-Bots can be registered by calling `BotRunner.addBot(bot)`. Once a bot is registered, POST requests to the path `/[bot.name]` will be directed to the bot.
+the botRunner function is given a list of bots, and returns a Router object. For any bot passed as an argument, POST requests through the router to the path `/[bot.name]` will be directed to the bot.
 
-The server can be started by calling `BotRunner.listen(port)`, and may be stopped by calling `BotRunner.close()`.
+The returned Router object should be treated like any other Express router.
 
 ## Debugging
 Verbose logging can be enabled by setting the environment variable `BOT_VERBOSE` to any non-empty string.
