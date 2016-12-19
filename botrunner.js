@@ -2,24 +2,25 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const Bot = require('./bots/bot');
 
-module.exports = BotRunner;
+module.exports = botRunner;
 
 // A BotRunner listens for POST requests and calls the bots registered to it.
-function BotRunner() {
-    this.bots = new Map();
+function botRunner(...botList) {
+    var bots = new Map();
+    var router = new express.Router();
 
-    var self = this;
+    botList.forEach(function (bot) {
+        bots.set(bot.name, bot);
+    });
 
-    this.app = new express();
-    this.app.use(bodyParser.json());
-    this.app.post('/:botName', function(req, res) {
-        if (self.preprocess(req)) {
+    router.use(bodyParser.json());
+    router.post('/:botName', function(req, res) {
+        if (preprocess(req)) {
             var botName = req.params.botName;
 
-            if (self.bots.has(botName)) {
-                var bot = self.bots.get(botName);
+            if (bots.has(botName)) {
+                var bot = bots.get(botName);
 
                 bot.consult(req.body);
             }
@@ -27,11 +28,13 @@ function BotRunner() {
 
         res.end();
     });
+
+    return router;
 }
 
 // processes the given request and determines whether it should
 // go to a bot. Returns true if the request is bot-worthy, false otherwise.
-BotRunner.prototype.preprocess = function(req) {
+function preprocess(req) {
     if (typeof req !== 'object') return false;
     if (typeof req.body !== 'object') return false;
     if (typeof req.body.text !== 'string') return false;
@@ -42,24 +45,4 @@ BotRunner.prototype.preprocess = function(req) {
     }
 
     return true;
-};
-
-// register a new bot
-BotRunner.prototype.addBot = function(bot) {
-    if (!(bot instanceof Bot)) {
-        throw new TypeError('bot must be an instance of the Bot class');
-    }
-
-    this.bots.set(bot.name, bot);
-};
-
-BotRunner.prototype.listen = function (port) {
-    this.server = this.app.listen(port);
-};
-
-BotRunner.prototype.close = function () {
-    if (this.server) {
-        this.server.close();
-        this.server = null;
-    }
-};
+}

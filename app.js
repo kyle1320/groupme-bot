@@ -1,6 +1,7 @@
 'use strict';
 
-const BotRunner = require('./botrunner');
+const express = require('express');
+const botRunner = require('./botrunner');
 const groupmeServices = require('./groupme-services');
 
 const DebugBot   = require('./bots/debug');
@@ -17,11 +18,13 @@ function postMessage(msg) {
 }
 
 // runner? I hardly know her!
-const runner = new BotRunner();
+const runner = botRunner(
+    new DebugBot  (process.env.DEBUG_BOT_ID,   postMessage),
+    new HogsBot   (process.env.HOGS_BOT_ID,    postMessage),
+    new HarambeBot(process.env.HARAMBE_BOT_ID, postMessage),
+    new ArtKalbBot(process.env.ARTKALB_BOT_ID, postMessage)
+);
 
-runner.addBot(new DebugBot  (process.env.DEBUG_BOT_ID,   postMessage));
-runner.addBot(new HogsBot   (process.env.HOGS_BOT_ID,    postMessage));
-runner.addBot(new HarambeBot(process.env.HARAMBE_BOT_ID, postMessage));
-runner.addBot(new ArtKalbBot(process.env.ARTKALB_BOT_ID, postMessage));
-
-runner.listen(process.env.PORT);
+var app = new express();
+app.use(runner);
+app.listen(process.env.PORT || 3000);

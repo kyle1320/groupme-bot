@@ -1,8 +1,9 @@
 'use strict';
 
 const assert = require('assert');
-const BotRunner = require('./botrunner');
+const botRunner = require('./botrunner');
 const http = require('http');
+const express = require('express');
 
 process.env.ARTKALB_MESSAGE_DELAY = 150;
 process.env.ARTKALB_SPECIAL_CASES = '["blahblah\\\\b", "BlahBlahBlah"]';
@@ -13,11 +14,7 @@ var artkalb = new (require('./bots/artkalb'))('artkalbid', pushMessage);
 var hogs = new (require('./bots/hogs'))('hogsid', pushMessage);
 var debug = new (require ('./bots/debug'))('debugid', pushMessage);
 
-var testBotRunner = new BotRunner();
-testBotRunner.addBot(artkalb);
-testBotRunner.addBot(harambe);
-testBotRunner.addBot(hogs);
-testBotRunner.addBot(debug);
+var testBotRunner = botRunner(artkalb, harambe, hogs, debug);
 
 function pushMessage(msg) {
     messages.push(msg);
@@ -170,7 +167,9 @@ testBot(
 
 console.log('====================\nRunning http tests...\n====================');
 
-testBotRunner.listen(3000);
+var app = new express();
+app.use(testBotRunner);
+var server = app.listen(3000);
 
 testRequest(
     '/artkalb',
@@ -214,7 +213,7 @@ testRequest(
         {bot_id: 'hogsid', text: '>>>> 5+5\n10'}
     );
 }).then(function() {
-    testBotRunner.close();
+    server.close();
 
     console.log('passed all tests');
 }).catch(function (err) {
