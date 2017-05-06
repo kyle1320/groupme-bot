@@ -7,7 +7,7 @@ module.exports = {
     eboard: require('./eboard'),
     free: require('./free'),
     events: require('./events'),
-    eval: require('./eval')
+    calc: require('./calc')
 };
 
 // we must require help separately, since it uses the commands object.

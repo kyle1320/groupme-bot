@@ -1,6 +1,5 @@
 'use strict';
 
-const express = require('express');
 const botRunner = require('./botrunner');
 const groupmeServices = require('./groupme-services');
 
@@ -25,6 +24,4 @@ const runner = botRunner(
     new ArtKalbBot(process.env.ARTKALB_BOT_ID, postMessage)
 );
 
-var app = new express();
-app.use(runner);
-app.listen(process.env.PORT || 3000);
+module.exports = runner;

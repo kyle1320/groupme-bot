@@ -1,5 +1,5 @@
 # groupme-bot
-Runs a Node.js server that allows "bots" to listen for, and reply to, GroupMe messages. The main program can be started using the command `node app.js`, or optionally, `node start`.
+A package that allows "bots" to listen for, and reply to, GroupMe messages. Should be required by another express program and added as a route.
 
 ## Bots
 Bots provide the mechanism to parse and reply to posted messages. Bots should extend the prototype provided by /bots/bot.js. Bots have the following properties:
