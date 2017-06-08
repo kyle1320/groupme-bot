@@ -8,7 +8,13 @@ var botPostRequestOptions = {
     method: 'POST'
 };
 
-module.exports.postBotMessage = function (msg) {
-    var req = https.request(botPostRequestOptions);
-    req.end(JSON.stringify(msg));
-};
+if (process.env.NODE_ENV === 'production') {
+    module.exports.postBotMessage = function (msg) {
+        var req = https.request(botPostRequestOptions);
+        req.end(JSON.stringify(msg));
+    };
+} else { // development mode. Messages are printed to console.
+    module.exports.postBotMessage = function (msg) {
+        console.log(JSON.stringify(msg));
+    };
+}
