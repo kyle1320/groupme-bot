@@ -2,12 +2,11 @@
 
 module.exports = {
     help: undefined,
-    test: require('./test'),
-    links: require('./links'),
-    eboard: require('./eboard'),
-    free: require('./free'),
-    events: require('./events'),
-    calc: require('./calc')
+    links:    require('./links'),
+    free:     require('./free'),
+    events:   require('./events'),
+    calc:     require('./calc'),
+    feedback: require('./feedback')
 };
 
 // we must require help separately, since it uses the commands object.

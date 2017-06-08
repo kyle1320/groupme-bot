@@ -1,9 +1,10 @@
 'use strict';
 
 module.exports = function (args) {
-    return `HOGS Website: hogs.rit.edu
-Pawprints: pawprints.rit.edu
-RIT Reddit: www.reddit.com/r/rit/`;
+    return `HOGS Website: https://hogs.rit.edu/
+Pawprints: https://pawprints.rit.edu/
+Tiger Center: https://tigercenter.rit.edu/
+RIT Reddit: https://www.reddit.com/r/rit/`;
 };
 
 module.exports.helpString =

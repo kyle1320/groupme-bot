@@ -33,4 +33,4 @@ module.exports = function (args) {
 module.exports.helpString =
 `Provides information about available commands.
 Usage: !help [command]
-If command is given, prints help for that command.`;
+If [command] is given, prints help for that command.`;

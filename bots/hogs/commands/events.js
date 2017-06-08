@@ -67,5 +67,5 @@ module.exports = function (args) {
 
 module.exports.helpString =
 `Fetches and displays the next upcoming event on the HOGS calendar.
-Usage: events [numberOfEvents]
-where numberOfEvents is the number of events to show, up to five.`;
+Usage: !events [numberOfEvents]
+where [numberOfEvents] is the number of events to show, up to five.`;
