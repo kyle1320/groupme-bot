@@ -8,39 +8,32 @@ module.exports = class HogsBot extends Bot {
         super('hogs', id, submit);
     }
 
+    post (msg) {
+        if (!msg) return;
+
+        super.post('>' + msg); // insert > to make text quoted / monospace
+    }
+
     consult (msg) {
 
         // if the message text begins with ! or /, interpret it as a command
         if (/^[!\/]/.test(msg.text)) {
 
-            // twim whitespace
-            msg.text = msg.text.trim();
-
             // split arguments by whitespace
-            var args = msg.text.substring(1).split(/\s+/);
+            var args = msg.text.trim().substring(1).split(/\s+/);
             var cmd = args.splice(0, 1)[0].toLowerCase();
 
             if (cmd in commands) {
-                var self = this;
-
-                var result = commands[cmd](args);
+                var result = commands[cmd](args, msg);
 
                 if (result instanceof Promise) {
-                    return result.then(function (text) {
-                        if (text) {
-
-                            // insert > to make text quoted / monospace
-                            self.post('>' + text);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.log(err);
-                        self.post('>Sorry, something went wrong.');
-                    });
-                } else if (result) {
-
-                    // insert > to make text quoted / monospace
-                    self.post('>' + result);
+                    result
+                        .catch(function (err) {
+                            console.log(err);
+                            return 'Sorry, something went wrong.';
+                        }).then(this.post.bind(this));
+                } else {
+                    this.post(result);
                 }
             }
         }
