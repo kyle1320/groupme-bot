@@ -143,6 +143,12 @@ testBot(
     {text: '>>>> 1<<10\n1024'}
 );
 
+testBot(
+    hogs,
+    {text: '13:35 /help'},
+    {text: /.+/}
+);
+
 // test debug bot
 
 testBot(

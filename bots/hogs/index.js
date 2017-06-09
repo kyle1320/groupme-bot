@@ -16,6 +16,11 @@ module.exports = class HogsBot extends Bot {
 
     consult (msg) {
 
+        // support for timestamps
+        if (/^\d/.test(msg.text)) {
+            msg.text = msg.text.substring(msg.text.indexOf(' ') + 1);
+        }
+
         // if the message text begins with ! or /, interpret it as a command
         if (/^[!\/]/.test(msg.text)) {
 
