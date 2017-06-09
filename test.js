@@ -149,6 +149,12 @@ testBot(
     {text: /.+/}
 );
 
+testBot(
+    hogs,
+    {text: '/feedback testing'},
+    {text: '>Feedback sent. Thanks!'}
+);
+
 // test debug bot
 
 testBot(
