@@ -27,5 +27,5 @@ module.exports = function (args, msg) {
 
 module.exports.helpString =
 `Sends feedback to the creator (Kyle Cutler).
-Usage: !feedback [message]
-where [message] is the feedack you want to send.`;
+Usage: !feedback message
+where message is the feedack you want to send.`;
