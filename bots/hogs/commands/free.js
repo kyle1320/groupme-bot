@@ -1,6 +1,6 @@
 'use strict';
 
-var util = require('./util');
+var util = require('../../../util');
 var twitter = require('twitter')({
     consumer_key: process.env.TWITTER_API_KEY,
     consumer_secret: process.env.TWITTER_API_SECRET,

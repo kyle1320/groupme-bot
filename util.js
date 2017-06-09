@@ -1,11 +1,11 @@
 'use strict';
 
-var time = require('time');
+const time = require('time');
 
-var dayNames = [
+const dayNames = [
     'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 ];
-var monthNames = [
+const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
@@ -55,4 +55,10 @@ module.exports.formatDate = function formatDate(then) {
     timeStr = hr + (min ? ':' + ('0' + min).slice(-2) : '') + pd;
 
     return dateStr + ' at ' + timeStr;
-}
+};
+
+module.exports.sleep = function(delay) {
+    return new Promise(function (resolve, reject) {
+        setTimeout(resolve, delay);
+    });
+};

@@ -1,7 +1,7 @@
 'use strict';
 
 var https = require('https');
-var util = require('./util');
+var util = require('../../../util');
 
 var calendarID = process.env.HOGS_CALENDAR_ID;
 var key = process.env.GOOGLE_API_KEY;
