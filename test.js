@@ -9,17 +9,14 @@ const express = require('express');
 process.env.ARTKALB_MESSAGE_DELAY = 150;
 process.env.ARTKALB_SPECIAL_CASES = '["blahblah\\\\b", "BlahBlahBlah"]';
 
-var messages = [];
-var harambe = new (require('./bots/harambe'))('harambeid', pushMessage);
-var artkalb = new (require('./bots/artkalb'))('artkalbid', pushMessage);
-var hogs    = new (require('./bots/hogs'))   ('hogsid',    pushMessage);
-var debug   = new (require('./bots/debug'))  ('debugid',   pushMessage);
+const pushMessage = msg => messages.push(msg);
 
-var testBotRunner = botRunner(artkalb, harambe, hogs, debug);
+const harambe = new (require('./bots/harambe'))('harambeid', pushMessage);
+const artkalb = new (require('./bots/artkalb'))('artkalbid', pushMessage);
+const hogs    = new (require('./bots/hogs'))   ('hogsid',    pushMessage);
+const debug   = new (require('./bots/debug'))  ('debugid',   pushMessage);
 
-function pushMessage(msg) {
-    messages.push(msg);
-}
+const messages = [];
 
 function checkMessages(...contents) {
     assert.equal(messages.length, contents.length, "incorrect number of messages");
@@ -47,11 +44,10 @@ function checkMessages(...contents) {
 function testBot(bot, body, ...responses) {
     console.log("TEST", bot.name, body);
     bot.consult(body);
-    messages.forEach(x => console.log(JSON.stringify(x)));
     checkMessages.apply(null, responses);
 }
 
-async function testRequest(path, body, delay, ...responses) {
+async function testRequest(path, body, ...responses) {
     console.log("POST", path, body);
 
     http.request({
@@ -64,40 +60,35 @@ async function testRequest(path, body, delay, ...responses) {
         }
     }).end(JSON.stringify(body));
 
-    await util.sleep(delay);
+    await util.sleep(100);
 
     checkMessages.apply(null, responses);
 }
 
+console.log('======================\nRunning local tests...\n======================');
+
 // test Harambe bot
 
-console.log('====================\nRunning local tests...\n====================');
-
-testBot(
-    harambe,
+testBot(harambe,
     {text: 'harambe'},
     {text: 'Dicks out for Harambe!'}
 );
 
-testBot(
-    harambe,
+testBot(harambe,
     {text: 'cHaraMber alwhna'},
     {text: 'Dicks out for Harambe!'}
 );
 
-testBot(
-    harambe,
+testBot(harambe,
     {text: 'nothing :('}
 );
 
-testBot(
-    harambe,
+testBot(harambe,
     {text: 'nothing', name: 'I am harambe!'},
     {text: 'Harambe lives!'}
 );
 
-testBot(
-    harambe,
+testBot(harambe,
     {text: 'aaaharambea', name: 'I am harambe!'},
     {text: 'Harambe lives!'},
     {text: 'Dicks out for Harambe!'}
@@ -105,118 +96,96 @@ testBot(
 
 // test Art Kalb bot
 
-testBot(
-    artkalb,
+testBot(artkalb,
     {text: 'nothing :('}
 );
 
-testBot(
-    artkalb,
+testBot(artkalb,
     {text: 'abcer'}
 );
 
-testBot(
-    artkalb,
+testBot(artkalb,
     {text: 'NaIler wiper'},
     {text: 'NaIler? I hardly know her!'}
 );
 
-testBot(
-    artkalb,
+testBot(artkalb,
     {text: 'creater'}
 );
 
 // test hogs bot
 
-testBot(
-    hogs,
+testBot(hogs,
     {text: '/help'},
     {text: /.+/}
 );
 
-testBot(
-    hogs,
+testBot(hogs,
     {text: '/calc 1<<10'},
     {text: '>>>> 1<<10\n1024'}
 );
 
-testBot(
-    hogs,
+testBot(hogs,
     {text: '13:35 /help'},
     {text: /.+/}
 );
 
-testBot(
-    hogs,
+testBot(hogs,
     {text: '/feedback testing'},
     {text: '>Feedback sent. Thanks!'}
 );
 
 // test debug bot
 
-testBot(
-    debug,
+testBot(debug,
     {text: 'harambe'},
     {text: 'harambe: Dicks out for Harambe!'}
 );
 
-testBot(
-    debug,
+testBot(debug,
     {text: '/help harambe'},
     {text: 'harambe: Dicks out for Harambe!'},
     {text: /^hogs\: /}
 );
 
+console.log('======================\nRunning http tests...\n======================');
+
 // test Bot Runner
 
-console.log('====================\nRunning http tests...\n====================');
-
-var app = new express();
+const testBotRunner = botRunner(artkalb, harambe, hogs, debug);
+const app = new express();
 app.use(testBotRunner);
-var server = app.listen(3000);
+const server = app.listen(3000);
 
 (async function() {
     try {
-        await testRequest(
-            '/artkalb',
-            {text: 'hello'},
-            100
+        await testRequest('/artkalb',
+            {text: 'hello'}
         );
 
-        await testRequest(
-            '/harambe',
+        await testRequest('/harambe',
             {text: 'harambe'},
-            100,
             {bot_id: 'harambeid', text: 'Dicks out for Harambe!'}
         );
 
-        await testRequest(
-            '/debug',
+        await testRequest('/debug',
             {text: '/help harambe translator'},
-            100,
             {bot_id: 'debugid', text: 'harambe: Dicks out for Harambe!'},
             {bot_id: 'debugid', text: 'artkalb: translator? I hardly know her!'},
             {bot_id: 'debugid', text: /^hogs\: /}
         );
 
-        await testRequest(
-            '/artkalb',
+        await testRequest('/artkalb',
             {text: 'blahblah vibrator'},
-            200,
             {bot_id: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
         );
 
-        await testRequest(
-            '/artkalb',
-            {text: 'blahblah vibrator'},
-            100,
-            {bot_id: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
+        await testRequest('/artkalb',
+            {text: 'vibrator'}
         );
 
-        await testRequest(
-            '/hogs',
+        await testRequest('/hogs',
             {text: '/calc 5+5'},
-            100,
             {bot_id: 'hogsid', text: '>>>> 5+5\n10'}
         );
 
