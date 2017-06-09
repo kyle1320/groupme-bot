@@ -126,6 +126,11 @@ testBot(hogs,
 );
 
 testBot(hogs,
+    {text: '/calc sum(max(3, 5), range(10))'},
+    {text: '>>>> sum(max(3, 5), range(10))\n50'}
+);
+
+testBot(hogs,
     {text: '13:35 /help'},
     {text: /.+/}
 );
