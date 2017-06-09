@@ -44,6 +44,7 @@ function checkMessages(...contents) {
 function testBot(bot, body, ...responses) {
     console.log("TEST", bot.name, body);
     bot.consult(body);
+    messages.forEach(x=>console.log(JSON.stringify(x)));
     checkMessages.apply(null, responses);
 }
 
@@ -128,6 +129,16 @@ testBot(hogs,
 testBot(hogs,
     {text: '/calc sum(max(3, 5), range(10))'},
     {text: '>>>> sum(max(3, 5), range(10))\n50'}
+);
+
+testBot(hogs,
+    {text: '/calc var a = 2'},
+    {text: '>>>> var a = 2\nundefined'}
+);
+
+testBot(hogs,
+    {text: '/calc a'},
+    {text: '>>>> a\nReferenceError: a is not defined'}
 );
 
 testBot(hogs,
