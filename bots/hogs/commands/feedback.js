@@ -1,28 +1,18 @@
 'use strict';
 
-const request = require('request');
+const groupmeServices = require('../../../groupme-services');
 
-const key = process.env.MAKER_WEBHOOKS_KEY;
-const url = 'https://maker.ifttt.com/trigger/groupme_feedback/with/key/' + key;
+const FEEDBACK_BOT_ID = process.env.FEEDBACK_BOT_ID;
 
 module.exports = function (args, msg) {
     if (!args.length) return;
 
-    var data = {
-        value1: msg.name,
-        value2: args.join(' ')
-    };
-
-    return new Promise(function (resolve, reject) {
-        request.post(
-            url,
-            { json: data },
-            function (err, response, body) {
-                if (err) reject('Sorry, your feedback was not sent.');
-                else     resolve('Feedback sent. Thanks!');
-            }
-        );
+    groupmeServices.postBotMessage({
+        bot_id: FEEDBACK_BOT_ID,
+        text: msg.name + ': ' + args.join(' ')
     });
+
+    return 'Feedback sent. Thanks!';
 }
 
 module.exports.helpString =
