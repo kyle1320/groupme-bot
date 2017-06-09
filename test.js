@@ -1,5 +1,6 @@
 'use strict';
 
+const util = require('./util');
 const assert = require('assert');
 const botRunner = require('./botrunner');
 const http = require('http');
@@ -50,26 +51,22 @@ function testBot(bot, body, ...responses) {
     checkMessages.apply(null, responses);
 }
 
-function testRequest(path, body, delay, ...responses) {
+async function testRequest(path, body, delay, ...responses) {
     console.log("POST", path, body);
-    return new Promise(function(resolve, reject) {
-        var arr = [];
-        testBotRunner.submit = function(msg) {
-            arr.push(msg);
-        };
-        http.request({
-            hostname: 'localhost',
-            port: 3000,
-            path: path,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).end(JSON.stringify(body));
-        setTimeout(function() {resolve(arr)}, delay);
-    }).then(function () {
-        checkMessages.apply(null, responses);
-    });
+
+    http.request({
+        hostname: 'localhost',
+        port: 3000,
+        path: path,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).end(JSON.stringify(body));
+
+    await util.sleep(delay);
+
+    checkMessages.apply(null, responses);
 }
 
 // test Harambe bot
@@ -178,51 +175,56 @@ var app = new express();
 app.use(testBotRunner);
 var server = app.listen(3000);
 
-testRequest(
-    '/artkalb',
-    {text: 'hello'},
-    100
-).then(function() {
-    return testRequest(
-        '/harambe',
-        {text: 'harambe'},
-        100,
-        {bot_id: 'harambeid', text: 'Dicks out for Harambe!'}
-    );
-}).then(function() {
-    return testRequest(
-        '/debug',
-        {text: '/help harambe translator'},
-        100,
-        {bot_id: 'debugid', text: 'harambe: Dicks out for Harambe!'},
-        {bot_id: 'debugid', text: 'artkalb: translator? I hardly know her!'},
-        {bot_id: 'debugid', text: /^hogs\: /}
-    );
-}).then(function() {
-    return testRequest(
-        '/artkalb',
-        {text: 'blahblah vibrator'},
-        200,
-        {bot_id: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
-    );
-}).then(function() {
-    return testRequest(
-        '/artkalb',
-        {text: 'blahblah vibrator'},
-        100,
-        {bot_id: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
-    );
-}).then(function() {
-    return testRequest(
-        '/hogs',
-        {text: '/calc 5+5'},
-        100,
-        {bot_id: 'hogsid', text: '>>>> 5+5\n10'}
-    );
-}).then(function() {
-    server.close();
+(async function() {
+    try {
+        await testRequest(
+            '/artkalb',
+            {text: 'hello'},
+            100
+        );
 
-    console.log('passed all tests');
-}).catch(function (err) {
-    console.error(err);
-});
+        await testRequest(
+            '/harambe',
+            {text: 'harambe'},
+            100,
+            {bot_id: 'harambeid', text: 'Dicks out for Harambe!'}
+        );
+
+        await testRequest(
+            '/debug',
+            {text: '/help harambe translator'},
+            100,
+            {bot_id: 'debugid', text: 'harambe: Dicks out for Harambe!'},
+            {bot_id: 'debugid', text: 'artkalb: translator? I hardly know her!'},
+            {bot_id: 'debugid', text: /^hogs\: /}
+        );
+
+        await testRequest(
+            '/artkalb',
+            {text: 'blahblah vibrator'},
+            200,
+            {bot_id: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
+        );
+
+        await testRequest(
+            '/artkalb',
+            {text: 'blahblah vibrator'},
+            100,
+            {bot_id: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
+        );
+
+        await testRequest(
+            '/hogs',
+            {text: '/calc 5+5'},
+            100,
+            {bot_id: 'hogsid', text: '>>>> 5+5\n10'}
+        );
+
+        console.log('passed all tests');
+    } catch (e) {
+        console.log(e);
+        return;
+    } finally {
+        server.close();
+    }
+}());
