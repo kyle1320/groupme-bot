@@ -4,7 +4,8 @@ const Bot = require('../bot');
 const getMeme = require('./memegen');
 
 // the regular expression used to test for puns in messages.
-const punRegExp = /\S{4,}[eo]r\b/gi;
+const punRegExpEn = /\S{4,}[eo]r\b/gi;
+const punRegExpEs = /\S{4,}ella\b/gi;
 
 // "____er? I hardly know her!" functionality
 const hardlyKnowHer = {
@@ -33,12 +34,19 @@ const hardlyKnowHer = {
         self.specialCases = specialCases;
     },
     consult: function (self, msg) {
-        function post (word, ignoreTimeDelay) {
+        function post (word, ignoreTimeDelay, lang) {
             if (!ignoreTimeDelay) {
                 self.lastMsgTime = Date.now();
             }
 
-            self.post(word + '? I hardly know her!');
+            switch (lang) {
+                case 'es':
+                    self.post(word + '? ¡Apenas la conozco!');
+                    break;
+                default:
+                    self.post(word + '? I hardly know her!');
+                    break;
+            }
         }
 
         // special cases also override the time delay (you're welcome, Art)
@@ -58,19 +66,22 @@ const hardlyKnowHer = {
         if (Date.now() - self.lastMsgTime < self.msgDelay) return;
 
         // get matches
-        var matches = msg.text.match(punRegExp)
+        var matches = [].concat(
+            (msg.text.match(punRegExpEn) || []).map(m => ({text: m, lang: 'en'})),
+            (msg.text.match(punRegExpEs) || []).map(m => ({text: m, lang: 'es'}))
+        )
 
         if (matches && matches.length) {
 
             // find the longest matching word
             var longestMatch = matches[0];
             for (var i = 1; i < matches.length; i++) {
-                if (matches[i].length > longestMatch.length) {
+                if (matches[i].text.length > longestMatch.text.length) {
                     longestMatch = matches[i];
                 }
             }
 
-            post(longestMatch);
+            post(longestMatch.text, false, longestMatch.lang);
         }
     }
 };

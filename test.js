@@ -197,8 +197,8 @@ const server = app.listen(3000);
         );
 
         await testRequest('/artkalb',
-            {text: 'vibrator'},
-            {bot_id: 'artkalbid', text: 'vibrator? I hardly know her!'}
+            {text: 'estrella'},
+            {bot_id: 'artkalbid', text: 'estrella? ¡Apenas la conozco!'}
         );
 
         await testRequest('/artkalb',
