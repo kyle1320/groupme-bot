@@ -5,7 +5,7 @@ const getMeme = require('./memegen');
 
 // the regular expression used to test for puns in messages.
 const punRegExpEn = /\S{4,}[eo]r\b/gi;
-const punRegExpEs = /\S{4,}ella\b/gi;
+const punRegExpEs = /\S{2,}ella\b/gi;
 
 // "____er? I hardly know her!" functionality
 const hardlyKnowHer = {
