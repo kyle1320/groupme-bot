@@ -1,50 +1,61 @@
 'use strict';
 
 const Bot = require('../bot');
+const getMeme = require('./memegen');
 
 // the regular expression used to test for puns in messages.
-const punRegExp = /[a-z]{4,}[eo]r\b/gi;
+const punRegExp = /\S{4,}[eo]r\b/gi;
 
-module.exports = class ArtKalb extends Bot {
-    constructor (id, submit) {
-        super('artkalb', id, submit);
-
-        // 10 minute default delay between messages
-        this.msgDelay = +process.env.ARTKALB_MSG_DELAY || 1000 * 60 * 10;
-
-        // keep track of the last time we sent a message (for rate limiting)
-        this.lastMsgTime = 0;
-
-        // parse special cases
+// "____er? I hardly know her!" functionality
+const hardlyKnowHer = {
+    setup: function (self) {
+        var specialCases;
         try {
-            this.specialCases = JSON.parse(process.env.ARTKALB_SPECIAL_CASES);
-            if (!(this.specialCases instanceof Array)) this.specialCases = [];
+            specialCases = JSON.parse(process.env.ARTKALB_SPECIAL_CASES);
+            if (!(specialCases instanceof Array)) specialCases = [];
             else {
-                for (var i = 0; i < this.specialCases.length; i += 2) {
-                    this.specialCases[i] = new RegExp(this.specialCases[i], 'i');
+                for (var i = 0; i < specialCases.length; i += 2) {
+                    specialCases[i] = new RegExp(specialCases[i], 'i');
                 }
             }
         } catch (e) {
             console.log(e);
-            this.specialCases = [];
+            specialCases = [];
         }
-    }
 
-    consult (msg) {
+        // 10 minute default delay between messages
+        self.msgDelay = +process.env.ARTKALB_MSG_DELAY || 1000 * 60 * 10;
+
+        // keep track of the last time we sent a message (for rate limiting)
+        self.lastMsgTime = 0;
+
+        // list of special cases
+        self.specialCases = specialCases;
+    },
+    consult: function (self, msg) {
+        function post (word, ignoreTimeDelay) {
+            if (!ignoreTimeDelay) {
+                self.lastMsgTime = Date.now();
+            }
+
+            self.post(word + '? I hardly know her!');
+        }
+
         // special cases also override the time delay (you're welcome, Art)
-        for (var i = 0; i < this.specialCases.length - 1; i += 2) {
-            var re = this.specialCases[i];
-            var response = this.specialCases[i + 1];
+        for (var i = 0; i < self.specialCases.length - 1; i += 2) {
+            var re = self.specialCases[i];
+            var response = self.specialCases[i + 1];
 
             if (re instanceof RegExp && re.test(msg.text)) {
-                this.post(this.makePun(response));
+
+                post(response, true);
                 return;
             }
         }
 
-        // rate limiting. If we sent a message less than this.msgDelay ms ago,
+        // rate limiting. If we sent a message less than self.msgDelay ms ago,
         // don't send another message (don't even look for puns)
-        if (Date.now() - this.lastMsgTime < this.msgDelay) return;
+        if (Date.now() - self.lastMsgTime < self.msgDelay) return;
 
         // get matches
         var matches = msg.text.match(punRegExp)
@@ -59,17 +70,38 @@ module.exports = class ArtKalb extends Bot {
                 }
             }
 
-            this.post(this.makePun(longestMatch));
+            post(longestMatch);
         }
     }
+};
 
-    post (text) {
-        this.lastMsgTime = Date.now();
+// pickup line memes
+const pickupLines = {
+    setup: function (self) {
 
-        super.post(text);
+    },
+    consult: async function (self, msg) {
+        var match = msg.text.match(/girls?\b/i)
+
+        if (match && match.length) {
+            var usage = match[0][0].toUpperCase() + match[0].substring(1).toLowerCase();
+            var img = await getMeme();
+
+            self.post(usage + "!? Where??", img)
+        }
+    }
+};
+
+module.exports = class ArtKalb extends Bot {
+    constructor (id, submit) {
+        super('artkalb', id, submit);
+
+        hardlyKnowHer.setup(this);
+        pickupLines.setup(this);
     }
 
-    makePun (word) {
-        return word + '? I hardly know her!';
+    consult (msg) {
+        hardlyKnowHer.consult(this, msg);
+        pickupLines.consult(this, msg);
     }
 };

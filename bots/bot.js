@@ -19,8 +19,10 @@ module.exports = class Bot {
         throw new Error('Subclass must implement consult()');
     }
 
-    post (text) {
-        this.submit.call(this, { bot_id: this.id, text: text });
+    post (text, img) {
+        this.submit.call(this,
+            img ? { bot_id: this.id, text: text, picture_url: img }
+                : { bot_id: this.id, text: text });
     }
 
     postDelayed (text, delay) {

@@ -6,7 +6,7 @@ const botRunner = require('./botrunner');
 const http = require('http');
 const express = require('express');
 
-process.env.ARTKALB_MESSAGE_DELAY = 150;
+process.env.ARTKALB_MSG_DELAY = 150;
 process.env.ARTKALB_SPECIAL_CASES = '["blahblah\\\\b", "BlahBlahBlah"]';
 
 const pushMessage = msg => messages.push(msg);
@@ -197,12 +197,23 @@ const server = app.listen(3000);
         );
 
         await testRequest('/artkalb',
-            {text: 'vibrator'}
+            {text: 'vibrator'},
+            {bot_id: 'artkalbid', text: 'vibrator? I hardly know her!'}
+        );
+
+        await testRequest('/artkalb',
+            {text: 'i know a girl'},
+            {bot_id: 'artkalbid', text: 'Girl!? Where??', picture_url:/./}
         );
 
         await testRequest('/hogs',
             {text: '/calc 5+5'},
             {bot_id: 'hogsid', text: '>>>> 5+5\n10'}
+        );
+
+        await testRequest('/artkalb',
+            {text: '🅱️aller'},
+            {bot_id: 'artkalbid', text: '🅱️aller? I hardly know her!'}
         );
 
         console.log('passed all tests');
