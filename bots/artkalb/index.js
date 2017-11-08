@@ -41,7 +41,7 @@ const hardlyKnowHer = {
 
             switch (lang) {
                 case 'es':
-                    self.post(word + '? ¡Apenas la conozco!');
+                    self.post('¿' + word + '? ¡Apenas la conozco!');
                     break;
                 default:
                     self.post(word + '? I hardly know her!');
