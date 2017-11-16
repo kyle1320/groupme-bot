@@ -1,9 +1,11 @@
-const Canvas = require('canvas');
+'use strict';
+
+const Canvas = require('canvas')
 const pg = require('pg')
 const path = require('path')
 const fs = require('fs')
-const request = require('request-promise-native')
 const url = require('url')
+const groupme = require('../../groupme-services')
 
 /* DATABASE SETUP */
 
@@ -111,20 +113,30 @@ class MemeGen {
   }
 }
 
-// GroupMe image hosting upload
-async function uploadImage(image) {
-  return await request({
-    method: 'POST',
-    uri: 'https://image.groupme.com/pictures',
-    headers: {
-      'X-Access-Token': process.env.GROUPME_TOKEN,
-      'Content-Type': 'image/png'
-    },
-    body: image
-  }).then(function (res) {
-    return JSON.parse(res).payload.picture_url
-  })
-}
+// provides an async function to get a generator for the creepy Art meme.
+// this way the image generator is only loaded when needed.
+var getGenerator = (function() {
+  var gen = null
+
+  return async function() {
+    if (!gen) {
+      var imgBuf = await new Promise(function (resolve, reject) {
+
+        // TODO: make this path a config value?
+        fs.readFile(path.join(__dirname, './creepyart.jpg'), function (err, buf) {
+          if (err) reject(err)
+          else resolve(buf)
+        })
+      })
+      var image = new Canvas.Image; //await loadImage('./creepyart.jpg')
+      image.src = imgBuf;
+
+      gen = new MemeGen(image, 400, 519); // TODO: calculate width / height
+    }
+
+    return gen
+  }
+}())
 
 // gets a random meme from the database,
 // generates its image if necessary,
@@ -148,20 +160,10 @@ module.exports = async function getMeme () {
 
   // if meme has not been generated
   if (!meme.url) {
-
-    // TODO: make this path a config value?
-    var imgBuf = await new Promise(function (resolve, reject) {
-      fs.readFile(path.join(__dirname, './creepyart.jpg'), function (err, buf) {
-        if (err) reject(err)
-        else resolve(buf)
-      })
-    })
-    var image = new Canvas.Image; //await loadImage('./creepyart.jpg')
-    image.src = imgBuf;
-    var gen = new MemeGen(image, 400, 519); // TODO: calculate width / height
+    var gen = await getGenerator();
 
     // generate & upload image
-    meme.url = await uploadImage(
+    meme.url = await groupme.uploadImagePNG(
       gen.generate(meme[COLS.TOP_TEXT], meme[COLS.BOTTOM_TEXT])
     )
 
