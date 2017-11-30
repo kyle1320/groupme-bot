@@ -2,19 +2,24 @@
 
 const util = require('./util');
 const assert = require('assert');
-const botRunner = require('./botrunner');
+const botRouter = require('./botrouter');
+const BotGroup = require('./bots/botgroup');
 const http = require('http');
 const express = require('express');
+
+// import to test for obvious errors in index.js
+const router = require('.');
 
 process.env.ARTKALB_MSG_DELAY = 150;
 process.env.ARTKALB_SPECIAL_CASES = '["blahblah\\\\b", "BlahBlahBlah"]';
 
-const pushMessage = msg => messages.push(msg);
+const harambe = new (require('./bots/harambe'))('harambeid');
+const artkalb = new (require('./bots/artkalb'))('artkalbid');
+const hogs    = new (require('./bots/hogs'))   ('hogsid');
+const debug   = new (require('./bots/debug'))  ('debugid');
 
-const harambe = new (require('./bots/harambe'))('harambeid', pushMessage);
-const artkalb = new (require('./bots/artkalb'))('artkalbid', pushMessage);
-const hogs    = new (require('./bots/hogs'))   ('hogsid',    pushMessage);
-const debug   = new (require('./bots/debug'))  ('debugid',   pushMessage);
+const bots = new BotGroup(artkalb, harambe, hogs, debug);
+bots.on('message', msg => messages.push(msg));
 
 const messages = [];
 
@@ -25,7 +30,7 @@ function checkMessages(...contents) {
         var index = messages.findIndex(function (msg) {
             for (var key in content) {
                 if (content[key] instanceof RegExp) {
-                    if (!content[key].test(msg[key])) {
+                    if (msg[key] == null || !content[key].test(msg[key])) {
                         return false;
                     }
                 } else if (msg[key] !== content[key]) {
@@ -168,7 +173,7 @@ console.log('======================\nRunning http tests...\n====================
 
 // test Bot Runner
 
-const testBotRunner = botRunner(artkalb, harambe, hogs, debug);
+const testBotRunner = botRouter(bots);
 const app = new express();
 app.use(testBotRunner);
 const server = app.listen(3000);
@@ -181,39 +186,39 @@ const server = app.listen(3000);
 
         await testRequest('/harambe',
             {text: 'harambe'},
-            {bot_id: 'harambeid', text: 'Dicks out for Harambe!'}
+            {botId: 'harambeid', text: 'Dicks out for Harambe!'}
         );
 
         await testRequest('/debug',
             {text: '/help harambe translator'},
-            {bot_id: 'debugid', text: 'harambe: Dicks out for Harambe!'},
-            {bot_id: 'debugid', text: 'artkalb: translator? I hardly know her!'},
-            {bot_id: 'debugid', text: /^hogs\: /}
+            {botId: 'debugid', text: 'harambe: Dicks out for Harambe!'},
+            {botId: 'debugid', text: 'artkalb: translator? I hardly know her!'},
+            {botId: 'debugid', text: /^hogs\: /}
         );
 
         await testRequest('/artkalb',
             {text: 'blahblah vibrator'},
-            {bot_id: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
+            {botId: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
         );
 
         await testRequest('/artkalb',
             {text: 'estrella'},
-            {bot_id: 'artkalbid', text: '¿estrella? ¡Apenas la conozco!'}
+            {botId: 'artkalbid', text: '¿estrella? ¡Apenas la conozco!'}
         );
 
         await testRequest('/artkalb',
             {text: 'i know a girl'},
-            {bot_id: 'artkalbid', text: 'Girl!? Where??', picture_url:/./}
+            {botId: 'artkalbid', text: 'Girl!? Where??', imageUrl:/./}
         );
 
         await testRequest('/hogs',
             {text: '/calc 5+5'},
-            {bot_id: 'hogsid', text: '>>>> 5+5\n10'}
+            {botId: 'hogsid', text: '>>>> 5+5\n10'}
         );
 
         await testRequest('/artkalb',
             {text: '🅱️aller'},
-            {bot_id: 'artkalbid', text: '🅱️aller? I hardly know her!'}
+            {botId: 'artkalbid', text: '🅱️aller? I hardly know her!'}
         );
 
         console.log('passed all tests');
