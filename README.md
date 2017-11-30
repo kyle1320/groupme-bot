@@ -10,16 +10,14 @@ Bots provide the mechanism to parse and reply to posted messages. Bots should ex
   * **post, postDelayed, and postTime:** Posts a message on this bot's behalf, optionally after some delay or at a specific time. Should be called by the bot's `consult` function. Takes the message to be posted. These are some common properties of the message object:
     * **text:** The text to display in the posted message
 
-A Bot constructor should take two arguments:
-  * **id:** The bot's ID (as described above)
-  * **submit:** The function to be called when the bot posts a message. Should handle "posting" of the message (such as sending the message to GroupMe).
+A Bot constructor should take the bot's ID as its only argument.
 
-## BotRunner
-The botRunner function allows for the creation of an express.js Router that may run several bots simultaneously.
+A bot will emit a `message` event when a message is posted.
 
-the botRunner function is given a list of bots, and returns a Router object. For any bot passed as an argument, POST requests through the router to the path `/[bot.name]` will be directed to the bot.
+## Bot Router
+The botRouter function allows for the creation of an express.js Router that may run several bots simultaneously.
 
-The returned Router object should be treated like any other Express router.
+the botRunner function is given a BotGroup, and returns a Router object. For any bot in thr BotGroup, POST requests through the router to the path `/[bot.name]` will be directed to the bot.
 
 ## Debugging
 Verbose logging can be enabled by setting the environment variable `BOT_VERBOSE` to any non-empty string.
