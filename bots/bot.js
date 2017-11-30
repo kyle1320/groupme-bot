@@ -1,18 +1,21 @@
 'use strict';
 
+const EventEmitter = require('events');
+const message = require('./message');
+
 // Bots should extend this class and override consult().
-module.exports = class Bot {
+module.exports = class Bot extends EventEmitter {
 
     // name is the path this bot will be acessible by
     // id is the bot ID to send to GroupMe
-    constructor (name, id, submit) {
+    constructor (name, id) {
+        super();
+
         if (typeof name !== 'string') throw new TypeError('name must be a string!');
         if (typeof id !== 'string') throw new TypeError('id must be a string!');
-        if (typeof submit !== 'function') throw new TypeError('submit must be a function!');
 
         this.name = name;
         this.id = id;
-        this.submit = submit;
     }
 
     consult (msg) {
@@ -20,16 +23,15 @@ module.exports = class Bot {
     }
 
     post (text, img) {
-        this.submit.call(this,
-            img ? { bot_id: this.id, text: text, picture_url: img }
-                : { bot_id: this.id, text: text });
+        this.emit('message', message(this, text, img));
     }
 
-    postDelayed (text, delay) {
-        setTimeout(this.post.bind(this), delay, text).unref();
+    postDelayed (delay, text, img) {
+        // don't let the timeout stop the program from halting
+        setTimeout(this.post.bind(this), delay, text, img).unref();
     }
 
-    postTime (text, time) {
-        this.postDelayed(text, time.getTime() - Date.now());
+    postTime (time, text, img) {
+        this.postDelayed(time.getTime() - Date.now(), text, img);
     }
 }

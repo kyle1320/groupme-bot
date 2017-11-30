@@ -1,26 +1,25 @@
 'use strict';
 
-var Bot = require('./bot');
+const Bot = require('./bot');
+const BotGroup = require('./botgroup');
 
 module.exports = class Debug extends Bot {
-    constructor (id, submit) {
-        super('debug', id, function(msg) {
-            msg.text = this.name + ': ' + msg.text;
-            submit(msg);
-        });
+    constructor (id) {
+        super('debug', id);
 
-        var self = this;
+        this.bots = new BotGroup(
+            ...require('.')
+                .filter(BotClass => BotClass != Debug)
+                .map(BotClass => new BotClass(id))
+        );
 
-        this.bots = require('.').filter(function (BotClass) {
-            return BotClass != Debug;
-        }).map(function (BotClass) {
-            return new BotClass(self.id, self.submit);
-        });
+        this.bots.on(
+            'message',
+            msg => this.post(msg.botName + ': ' + msg.text, msg.imageUrl)
+        );
     }
 
     consult (msg) {
-        this.bots.forEach(function (bot) {
-            bot.consult(msg);
-        });
+        this.bots.consultAll(msg);
     }
 };

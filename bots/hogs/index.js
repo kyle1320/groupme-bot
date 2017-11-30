@@ -4,8 +4,8 @@ const Bot = require('../bot');
 const commands = require('./commands');
 
 module.exports = class HogsBot extends Bot {
-    constructor (id, submit) {
-        super('hogs', id, submit);
+    constructor (id) {
+        super('hogs', id);
     }
 
     post (msg) {

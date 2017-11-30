@@ -9,16 +9,21 @@ var botPostRequestOptions = {
     method: 'POST'
 };
 
-if (process.env.NODE_ENV === 'production') {
-    module.exports.postBotMessage = function (msg) {
-        var req = https.request(botPostRequestOptions);
-        req.end(JSON.stringify(msg));
+// bot message posting
+// msg is a bot message object.
+module.exports.postBotMessage = function (msg) {
+    var req = https.request(botPostRequestOptions);
+    var groupmeMessage = {
+        bot_id: msg.botId,
+        text: msg.text
     };
-} else { // development mode. Messages are printed to console.
-    module.exports.postBotMessage = function (msg) {
-        console.log(JSON.stringify(msg));
-    };
-}
+
+    if (msg.imageUrl) {
+        groupmeMessage.picture_url = msg.imageUrl;
+    }
+
+    req.end(JSON.stringify(groupmeMessage));
+};
 
 // GroupMe image hosting upload
 module.exports.uploadImagePNG = async function (image) {

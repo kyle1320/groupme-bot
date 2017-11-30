@@ -3,8 +3,8 @@
 var Bot = require('./bot');
 
 module.exports = class Harambe extends Bot {
-    constructor (id, submit) {
-        super('harambe', id, submit);
+    constructor (id) {
+        super('harambe', id);
     }
 
     consult (msg) {

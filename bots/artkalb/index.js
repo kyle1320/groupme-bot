@@ -104,8 +104,8 @@ const pickupLines = {
 };
 
 module.exports = class ArtKalb extends Bot {
-    constructor (id, submit) {
-        super('artkalb', id, submit);
+    constructor (id) {
+        super('artkalb', id);
 
         hardlyKnowHer.setup(this);
         pickupLines.setup(this);
