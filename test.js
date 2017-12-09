@@ -3,8 +3,9 @@
 const assert = require('assert');
 const http = require('http');
 const express = require('express');
+const util = require('./util');
 
-const {Bot, BotGroup, botRouter, bots, util} = require('.');
+const {Bot, BotGroup, botRouter, bots} = require('.');
 
 const harambe = new bots.Harambe('harambeid', {
 
