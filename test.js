@@ -11,17 +11,15 @@ const harambe = new bots.Harambe('harambeid', {
 });
 const artkalb = new bots.ArtKalb('artkalbid', {
     specialCases:    [/blahblah\b/i, "BlahBlahBlah"],
-    msgDelay:        150,
-    databaseUrl:     process.env.DATABASE_URL,
-    groupmeApiToken: process.env.GROUPME_TOKEN
+    msgDelay:        150
 });
 const hogs    = new bots.Hogs   ('hogsid', {
-    hogsCalendarId:   process.env.HOGS_CALENDAR_ID,
-    googleApiKey:     process.env.GOOGLE_API_KEY,
-    feedbackBotId:    process.env.FEEDBACK_BOT_ID,
-    twitterApiKey:    process.env.TWITTER_API_KEY,
-    twitterApiSecret: process.env.TWITTER_API_SECRET,
-    twitterApiToken:  process.env.TWITTER_API_TOKEN,
+    hogsCalendarId:   '',
+    googleApiKey:     '',
+    feedbackBotId:    'feedbackid',
+    twitterApiKey:    '',
+    twitterApiSecret: '',
+    twitterApiToken:  '',
 });
 const debug   = new bots.Debug  ('debugid', {
     bots: new BotGroup(artkalb, harambe, hogs)
@@ -217,7 +215,7 @@ const server = app.listen(3000);
 
         await testRequest('/artkalb',
             {text: 'i know a girl'},
-            {botId: 'artkalbid', text: 'Girl!? Where??', imageUrl:/./}
+            {botId: 'artkalbid', text: 'Girl!? Where??'}
         );
 
         await testRequest('/hogs',

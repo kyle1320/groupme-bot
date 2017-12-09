@@ -118,6 +118,12 @@ class MemeFactory {
   constructor (options) {
     this.options = options
 
+    if (!options.databaseUrl) {
+      this.pool = null;
+      this.created = null;
+      return;
+    }
+
     /* DATABASE SETUP */
 
     const params = url.parse(options.databaseUrl)
@@ -169,7 +175,16 @@ class MemeFactory {
   // generates its image if necessary,
   // and returns its url.
   async getMeme () {
-    await this.created;
+    if (this.pool == null) {
+      return null;
+    }
+
+    try {
+      await this.created;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
 
     // fetch a random row from the table
     var meme = await this.pool.query(`

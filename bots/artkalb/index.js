@@ -107,7 +107,7 @@ module.exports = class ArtKalb extends Bot {
         super('artkalb', id, options, {
             specialCases: [],
             msgDelay: 1000 * 60 * 10,
-            databaseUrl: 'postgres://fake:fake@fake.com/fakedb'
+            databaseUrl: ''
         });
 
         if (this.options.specialCasesStr) {
