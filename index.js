@@ -11,6 +11,5 @@ module.exports = {
         ArtKalb: require('./bots/artkalb')
     },
     botRouter: require('./botrouter'),
-    groupmeServices: require('./groupme-services'),
-    util: require('./util')
+    groupmeServices: require('./groupme-services')
 };
