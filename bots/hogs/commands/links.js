@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (args) {
+module.exports = function (args, msg, options) {
     return `HOGS Website: https://hogs.rit.edu/
 Pawprints: https://pawprints.rit.edu/
 Tiger Center: https://tigercenter.rit.edu/

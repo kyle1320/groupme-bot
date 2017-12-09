@@ -3,20 +3,20 @@
 var https = require('https');
 var util = require('../../../util');
 
-var calendarID = process.env.HOGS_CALENDAR_ID;
-var key = process.env.GOOGLE_API_KEY;
-
-module.exports = function (args) {
+module.exports = function (args, msg, options) {
 
     // first argument is number of events to show.
     // Defaults to 1, max value is 5.
     var eventsToShow = Math.min(Math.max(parseInt(args[0]) || 0, 1), 5);
 
+    var calendarID = options.hogsCalendarId;
+    var key = options.googleApiKey;
+
     return new Promise(function (resolve, reject) {
         var eventsURL =
             'https://www.googleapis.com/calendar/v3/calendars/'+
-            calendarID+'/events?singleEvents=true&orderBy=startTime&maxResults='+
-            eventsToShow+'&key='+key+'&timeMin='+(new Date().toISOString());
+            hogsCalendarID+'/events?singleEvents=true&orderBy=startTime&maxResults='+
+            eventsToShow+'&key='+googleApiKey+'&timeMin='+(new Date().toISOString());
 
         https.get(eventsURL, function (res) {
             var body = '';

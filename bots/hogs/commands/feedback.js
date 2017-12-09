@@ -2,13 +2,13 @@
 
 const groupmeServices = require('../../../groupme-services');
 
-const FEEDBACK_BOT_ID = process.env.FEEDBACK_BOT_ID;
-
-module.exports = function (args, msg) {
+module.exports = function (args, msg, options) {
     if (!args.length) return;
 
+    var botId = options.feedbackBotId;
+
     groupmeServices.postBotMessage({
-        bot_id: FEEDBACK_BOT_ID,
+        bot_id: botId,
         text: msg.name + ': ' + args.join(' ')
     });
 

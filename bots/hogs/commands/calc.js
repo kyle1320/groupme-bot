@@ -2,7 +2,7 @@
 
 var vm = require('vm');
 
-module.exports = function (args) {
+module.exports = function (args, msg, options) {
     var code = args.join(' ');
     var val;
 

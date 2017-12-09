@@ -8,17 +8,30 @@ const http = require('http');
 const express = require('express');
 
 // import to test for obvious errors in index.js
-const router = require('.');
+//const router = require('.');
 
-process.env.ARTKALB_MSG_DELAY = 150;
-process.env.ARTKALB_SPECIAL_CASES = '["blahblah\\\\b", "BlahBlahBlah"]';
+const harambe = new (require('./bots/harambe'))('harambeid', {
 
-const harambe = new (require('./bots/harambe'))('harambeid');
-const artkalb = new (require('./bots/artkalb'))('artkalbid');
-const hogs    = new (require('./bots/hogs'))   ('hogsid');
-const debug   = new (require('./bots/debug'))  ('debugid');
+});
+const artkalb = new (require('./bots/artkalb'))('artkalbid', {
+    specialCases:    [/blahblah\b/i, "BlahBlahBlah"],
+    msgDelay:        150,
+    databaseUrl:     process.env.DATABASE_URL,
+    groupmeApiToken: process.env.GROUPME_TOKEN
+});
+const hogs    = new (require('./bots/hogs'))   ('hogsid', {
+    hogsCalendarId:   process.env.HOGS_CALENDAR_ID,
+    googleApiKey:     process.env.GOOGLE_API_KEY,
+    feedbackBotId:    process.env.FEEDBACK_BOT_ID,
+    twitterApiKey:    process.env.TWITTER_API_KEY,
+    twitterApiSecret: process.env.TWITTER_API_SECRET,
+    twitterApiToken:  process.env.TWITTER_API_TOKEN,
+});
+// const debug   = new (require('./bots/debug'))  ('debugid', {
 
-const bots = new BotGroup(artkalb, harambe, hogs, debug);
+// });
+
+const bots = new BotGroup(artkalb, harambe, hogs);
 bots.on('message', msg => messages.push(msg));
 
 const messages = [];
@@ -158,16 +171,16 @@ testBot(hogs,
 
 // test debug bot
 
-testBot(debug,
-    {text: 'harambe'},
-    {text: 'harambe: Dicks out for Harambe!'}
-);
+// testBot(debug,
+//     {text: 'harambe'},
+//     {text: 'harambe: Dicks out for Harambe!'}
+// );
 
-testBot(debug,
-    {text: '/help harambe'},
-    {text: 'harambe: Dicks out for Harambe!'},
-    {text: /^hogs\: /}
-);
+// testBot(debug,
+//     {text: '/help harambe'},
+//     {text: 'harambe: Dicks out for Harambe!'},
+//     {text: /^hogs\: /}
+// );
 
 console.log('======================\nRunning http tests...\n======================');
 
@@ -189,12 +202,12 @@ const server = app.listen(3000);
             {botId: 'harambeid', text: 'Dicks out for Harambe!'}
         );
 
-        await testRequest('/debug',
-            {text: '/help harambe translator'},
-            {botId: 'debugid', text: 'harambe: Dicks out for Harambe!'},
-            {botId: 'debugid', text: 'artkalb: translator? I hardly know her!'},
-            {botId: 'debugid', text: /^hogs\: /}
-        );
+        // await testRequest('/debug',
+        //     {text: '/help harambe translator'},
+        //     {botId: 'debugid', text: 'harambe: Dicks out for Harambe!'},
+        //     {botId: 'debugid', text: 'artkalb: translator? I hardly know her!'},
+        //     {botId: 'debugid', text: /^hogs\: /}
+        // );
 
         await testRequest('/artkalb',
             {text: 'blahblah vibrator'},

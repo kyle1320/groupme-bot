@@ -4,8 +4,8 @@ const Bot = require('../bot');
 const commands = require('./commands');
 
 module.exports = class HogsBot extends Bot {
-    constructor (id) {
-        super('hogs', id);
+    constructor (id, options) {
+        super('hogs', id, options);
     }
 
     post (msg) {
@@ -29,7 +29,7 @@ module.exports = class HogsBot extends Bot {
             var cmd = args.splice(0, 1)[0].toLowerCase();
 
             if (cmd in commands) {
-                var result = commands[cmd](args, msg);
+                var result = commands[cmd](args, msg, this.options);
 
                 if (result instanceof Promise) {
                     result

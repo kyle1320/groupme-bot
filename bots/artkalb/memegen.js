@@ -7,41 +7,6 @@ const fs = require('fs')
 const url = require('url')
 const groupme = require('../../groupme-services')
 
-/* DATABASE SETUP */
-
-const params = url.parse(process.env.DATABASE_URL)
-const serverAuth = params.auth.split(':')
-const config = {
-  user: serverAuth[0],
-  password: serverAuth[1],
-  host: params.hostname,
-  port: params.port,
-  database: params.pathname.split('/')[1],
-  ssl: true
-}
-
-const TABLES = {
-  MEMES: 'memes'
-}
-const COLS = {
-  ID: 'id',
-  TOP_TEXT: 'top_text',
-  BOTTOM_TEXT: 'bottom_text',
-  URL: 'url'
-}
-
-const pool = new pg.Pool(config)
-const created = pool.query(`
-  CREATE TABLE IF NOT EXISTS ${TABLES.MEMES}(
-    ${COLS.ID}          BIGSERIAL     PRIMARY KEY,
-    ${COLS.TOP_TEXT}    VARCHAR(5000) NOT NULL,
-    ${COLS.BOTTOM_TEXT} VARCHAR(5000) NOT NULL,
-    ${COLS.URL}         VARCHAR(5000)
-  );
-`).catch(function (err) {
-  console.error(err)
-})
-
 // Meme generation helper class
 class MemeGen {
   constructor (image, width, height) {
@@ -138,42 +103,108 @@ var getGenerator = (function() {
   }
 }())
 
-// gets a random meme from the database,
-// generates its image if necessary,
-// and returns its url.
-module.exports = async function getMeme () {
-  await created;
-
-  // fetch a random row from the table
-  var meme = await pool.query(`
-    SELECT * FROM ${TABLES.MEMES}
-    ORDER BY RANDOM()
-    LIMIT 1
-  `)
-
-  // no memes :(
-  if (!meme.rowCount) {
-    return null;
-  }
-
-  meme = meme.rows[0]
-
-  // if meme has not been generated
-  if (!meme.url) {
-    var gen = await getGenerator();
-
-    // generate & upload image
-    meme.url = await groupme.uploadImagePNG(
-      gen.generate(meme[COLS.TOP_TEXT], meme[COLS.BOTTOM_TEXT])
-    )
-
-    // update database
-    pool.query(`
-      UPDATE ${TABLES.MEMES}
-      SET ${COLS.URL} = $1
-      WHERE ${COLS.ID} = $2
-    `, [meme.url, meme.id])
-  }
-
-  return meme.url;
+const TABLES = {
+  MEMES: 'memes'
 }
+
+const COLS = {
+  ID: 'id',
+  TOP_TEXT: 'top_text',
+  BOTTOM_TEXT: 'bottom_text',
+  URL: 'url'
+}
+
+class MemeFactory {
+  constructor (options) {
+    this.options = options
+
+    /* DATABASE SETUP */
+
+    const params = url.parse(options.databaseUrl)
+    const serverAuth = params.auth.split(':')
+    const config = {
+      user: serverAuth[0],
+      password: serverAuth[1],
+      host: params.hostname,
+      port: params.port,
+      database: params.pathname.split('/')[1],
+      ssl: true
+    }
+
+    this.pool = new pg.Pool(config)
+    this.created = this.pool.query(`
+      CREATE TABLE IF NOT EXISTS ${TABLES.MEMES}(
+        ${COLS.ID}          BIGSERIAL     PRIMARY KEY,
+        ${COLS.TOP_TEXT}    VARCHAR(5000) NOT NULL,
+        ${COLS.BOTTOM_TEXT} VARCHAR(5000) NOT NULL,
+        ${COLS.URL}         VARCHAR(5000)
+      );
+    `).catch(function (err) {
+      console.error(err)
+    })
+
+    this._gen = null;
+  }
+
+  async getGenerator() {
+    if (!this._gen) {
+      var imgBuf = await new Promise(function (resolve, reject) {
+
+        // TODO: make this path a config value?
+        fs.readFile(path.join(__dirname, './creepyart.jpg'), function (err, buf) {
+          if (err) reject(err)
+          else resolve(buf)
+        })
+      })
+      var image = new Canvas.Image; //await loadImage('./creepyart.jpg')
+      image.src = imgBuf;
+
+      this._gen = new MemeGen(image, 400, 519); // TODO: calculate width / height
+    }
+
+    return this._gen;
+  }
+
+  // gets a random meme from the database,
+  // generates its image if necessary,
+  // and returns its url.
+  async getMeme () {
+    await this.created;
+
+    // fetch a random row from the table
+    var meme = await this.pool.query(`
+      SELECT * FROM ${TABLES.MEMES}
+      ORDER BY RANDOM()
+      LIMIT 1
+    `)
+
+    // no memes :(
+    if (!meme.rowCount) {
+      return null;
+    }
+
+    meme = meme.rows[0]
+
+    // if meme has not been generated
+    if (!meme.url) {
+      var gen = await this.getGenerator();
+
+      // generate & upload image
+      meme.url = await groupme.uploadImagePNG(
+        gen.generate(meme[COLS.TOP_TEXT], meme[COLS.BOTTOM_TEXT]),
+        this.options
+      )
+
+      // update database
+      pool.query(`
+        UPDATE ${TABLES.MEMES}
+        SET ${COLS.URL} = $1
+        WHERE ${COLS.ID} = $2
+      `, [meme.url, meme.id])
+    }
+
+    return meme.url;
+  }
+}
+
+module.exports = MemeFactory

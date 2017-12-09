@@ -26,12 +26,12 @@ module.exports.postBotMessage = function (msg) {
 };
 
 // GroupMe image hosting upload
-module.exports.uploadImagePNG = async function (image) {
+module.exports.uploadImagePNG = async function (image, options) {
     var res = await request({
         method: 'POST',
         uri: 'https://image.groupme.com/pictures',
         headers: {
-        'X-Access-Token': process.env.GROUPME_TOKEN,
+        'X-Access-Token': options.groupmeApiToken,
         'Content-Type': 'image/png'
         },
         body: image

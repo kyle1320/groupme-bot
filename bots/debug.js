@@ -4,8 +4,8 @@ const Bot = require('./bot');
 const BotGroup = require('./botgroup');
 
 module.exports = class Debug extends Bot {
-    constructor (id) {
-        super('debug', id);
+    constructor (id, options) {
+        super('debug', id, options);
 
         this.bots = new BotGroup(
             ...require('.')

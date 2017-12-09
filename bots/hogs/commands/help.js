@@ -2,7 +2,7 @@
 
 const commands = require('./index');
 
-module.exports = function (args) {
+module.exports = function (args, msg, options) {
 
     // give specific command information
     if (args.length) {

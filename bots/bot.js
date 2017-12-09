@@ -8,7 +8,7 @@ module.exports = class Bot extends EventEmitter {
 
     // name is the path this bot will be acessible by
     // id is the bot ID to send to GroupMe
-    constructor (name, id) {
+    constructor (name, id, options, defaultOptions = {}) {
         super();
 
         if (typeof name !== 'string') throw new TypeError('name must be a string!');
@@ -16,6 +16,14 @@ module.exports = class Bot extends EventEmitter {
 
         this.name = name;
         this.id = id;
+
+        this.options = options || {};
+
+        for (var key in defaultOptions) {
+            if (typeof this.options[key] === 'undefined') {
+                this.options[key] = defaultOptions[key];
+            }
+        }
     }
 
     consult (msg) {
