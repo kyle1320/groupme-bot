@@ -9,4 +9,8 @@ module.exports = class Feedback extends Bot {
 
     // feedback bot doesn't read messages
     consult (msg) {}
+
+    sendFeedback(text, img) {
+        this.post(text, img)
+    }
 };

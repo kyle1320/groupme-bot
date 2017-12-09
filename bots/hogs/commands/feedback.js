@@ -1,16 +1,10 @@
 'use strict';
 
-const groupmeServices = require('../../../groupme-services');
-
 module.exports = function (args, msg, options) {
     if (!args.length) return;
 
-    var botId = options.feedbackBotId;
-
-    groupmeServices.postBotMessage({
-        bot_id: botId,
-        text: msg.name + ': ' + args.join(' ')
-    });
+    var feedbackBot = options.feedbackBot;
+    feedbackBot.sendFeedback(msg.name + ': ' + args.join(' '));
 
     return 'Feedback sent. Thanks!';
 }

@@ -159,8 +159,9 @@ testBot(hogs,
 );
 
 testBot(hogs,
-    {text: '/feedback testing'},
-    {text: '>Feedback sent. Thanks!'}
+    {name: 'user', text: '/feedback testing'},
+    {botId: 'hogsid', text: '>Feedback sent. Thanks!'},
+    {botId: 'feedbackid', text: 'user: testing'}
 );
 
 // test debug bot

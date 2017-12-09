@@ -2,9 +2,10 @@
 
 const EventEmitter = require('events');
 const message = require('./message');
+const BotGroup = require('./botgroup');
 
 // Bots should extend this class and override consult().
-module.exports = class Bot extends EventEmitter {
+class Bot extends EventEmitter {
 
     // name is the path this bot will be acessible by
     // id is the bot ID to send to GroupMe
@@ -44,6 +45,27 @@ module.exports = class Bot extends EventEmitter {
     }
 
     clone () {
-        return new (this.constructor)(this.id, this.options)
+        return new (this.constructor)(this.id, cloneObject(this.options));
     }
 }
+
+function cloneObject(obj) {
+    var clone = {}
+
+    for (var key in obj) {
+        var value = obj[key];
+
+        // TODO: possible infinite recursion
+        if (value instanceof Bot) {
+            value = value.clone();
+        } else if (value instanceof BotGroup) {
+            value = value.clone();
+        }
+
+        clone[key] = value;
+    }
+
+    return clone;
+}
+
+module.exports = Bot;

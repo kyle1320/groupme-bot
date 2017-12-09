@@ -2,10 +2,18 @@
 
 const Bot = require('../bot');
 const commands = require('./commands');
+const FeedbackBot = require('../feedback');
 
 module.exports = class HogsBot extends Bot {
     constructor (id, options) {
         super('hogs', id, options);
+
+        // re-emit any messages emitted by the feedback bot
+        var self = this;
+        this.options.feedbackBot = new FeedbackBot(this.options.feedbackBotId);
+        this.options.feedbackBot.on('message', function (...args) {
+            self.emit('message', ...args);
+        });
     }
 
     post (msg) {
