@@ -5,13 +5,11 @@ const BotGroup = require('./botgroup');
 
 module.exports = class Debug extends Bot {
     constructor (id, options) {
-        super('debug', id, options);
+        super('debug', id, options, {
+            bots: new BotGroup()
+        });
 
-        this.bots = new BotGroup(
-            ...require('.')
-                .filter(BotClass => BotClass != Debug)
-                .map(BotClass => new BotClass(id))
-        );
+        this.bots = this.options.bots.clone()
 
         this.bots.on(
             'message',

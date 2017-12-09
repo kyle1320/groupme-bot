@@ -8,7 +8,7 @@ const http = require('http');
 const express = require('express');
 
 // import to test for obvious errors in index.js
-//const router = require('.');
+const router = require('.');
 
 const harambe = new (require('./bots/harambe'))('harambeid', {
 
@@ -27,11 +27,12 @@ const hogs    = new (require('./bots/hogs'))   ('hogsid', {
     twitterApiSecret: process.env.TWITTER_API_SECRET,
     twitterApiToken:  process.env.TWITTER_API_TOKEN,
 });
-// const debug   = new (require('./bots/debug'))  ('debugid', {
 
-// });
+const debug   = new (require('./bots/debug'))  ('debugid', {
+    bots: new BotGroup(artkalb, harambe, hogs)
+});
 
-const bots = new BotGroup(artkalb, harambe, hogs);
+const bots = new BotGroup(artkalb, harambe, hogs, debug);
 bots.on('message', msg => messages.push(msg));
 
 const messages = [];
@@ -171,16 +172,16 @@ testBot(hogs,
 
 // test debug bot
 
-// testBot(debug,
-//     {text: 'harambe'},
-//     {text: 'harambe: Dicks out for Harambe!'}
-// );
+testBot(debug,
+    {text: 'harambe'},
+    {text: 'harambe: Dicks out for Harambe!'}
+);
 
-// testBot(debug,
-//     {text: '/help harambe'},
-//     {text: 'harambe: Dicks out for Harambe!'},
-//     {text: /^hogs\: /}
-// );
+testBot(debug,
+    {text: '/help harambe'},
+    {text: 'harambe: Dicks out for Harambe!'},
+    {text: /^hogs\: /}
+);
 
 console.log('======================\nRunning http tests...\n======================');
 
@@ -202,12 +203,12 @@ const server = app.listen(3000);
             {botId: 'harambeid', text: 'Dicks out for Harambe!'}
         );
 
-        // await testRequest('/debug',
-        //     {text: '/help harambe translator'},
-        //     {botId: 'debugid', text: 'harambe: Dicks out for Harambe!'},
-        //     {botId: 'debugid', text: 'artkalb: translator? I hardly know her!'},
-        //     {botId: 'debugid', text: /^hogs\: /}
-        // );
+        await testRequest('/debug',
+            {text: '/help harambe translator'},
+            {botId: 'debugid', text: 'harambe: Dicks out for Harambe!'},
+            {botId: 'debugid', text: 'artkalb: translator? I hardly know her!'},
+            {botId: 'debugid', text: /^hogs\: /}
+        );
 
         await testRequest('/artkalb',
             {text: 'blahblah vibrator'},

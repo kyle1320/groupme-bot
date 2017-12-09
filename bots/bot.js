@@ -42,4 +42,8 @@ module.exports = class Bot extends EventEmitter {
     postTime (time, text, img) {
         this.postDelayed(time.getTime() - Date.now(), text, img);
     }
+
+    clone () {
+        return new (this.constructor)(this.id, this.options)
+    }
 }

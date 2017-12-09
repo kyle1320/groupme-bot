@@ -28,4 +28,9 @@ module.exports = class BotGroup extends EventEmitter {
   consultAll(msg) {
     this.bots.forEach(bot => bot.consult(msg));
   }
+
+  clone() {
+    var botList = this.bots.map(bot => bot.clone())
+    return new BotGroup(...botList)
+  }
 }
