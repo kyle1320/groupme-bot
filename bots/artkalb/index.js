@@ -104,7 +104,6 @@ function parseSpecialCases(specialCasesStr) {
 
 module.exports = class ArtKalb extends Bot {
     constructor (id, options) {
-        console.log(options);
         super('artkalb', id, options, {
             specialCases: [],
             msgDelay: 1000 * 60 * 10,
