@@ -211,7 +211,7 @@ class MemeFactory {
       )
 
       // update database
-      pool.query(`
+      this.pool.query(`
         UPDATE ${TABLES.MEMES}
         SET ${COLS.URL} = $1
         WHERE ${COLS.ID} = $2
