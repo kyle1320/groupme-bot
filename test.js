@@ -1,25 +1,21 @@
 'use strict';
 
-const util = require('./util');
 const assert = require('assert');
-const botRouter = require('./botrouter');
-const BotGroup = require('./bots/botgroup');
 const http = require('http');
 const express = require('express');
 
-// import to test for obvious errors in index.js
-const router = require('.');
+const {Bot, BotGroup, botRouter, bots, util} = require('.');
 
-const harambe = new (require('./bots/harambe'))('harambeid', {
+const harambe = new bots.Harambe('harambeid', {
 
 });
-const artkalb = new (require('./bots/artkalb'))('artkalbid', {
+const artkalb = new bots.ArtKalb('artkalbid', {
     specialCases:    [/blahblah\b/i, "BlahBlahBlah"],
     msgDelay:        150,
     databaseUrl:     process.env.DATABASE_URL,
     groupmeApiToken: process.env.GROUPME_TOKEN
 });
-const hogs    = new (require('./bots/hogs'))   ('hogsid', {
+const hogs    = new bots.Hogs   ('hogsid', {
     hogsCalendarId:   process.env.HOGS_CALENDAR_ID,
     googleApiKey:     process.env.GOOGLE_API_KEY,
     feedbackBotId:    process.env.FEEDBACK_BOT_ID,
@@ -27,13 +23,12 @@ const hogs    = new (require('./bots/hogs'))   ('hogsid', {
     twitterApiSecret: process.env.TWITTER_API_SECRET,
     twitterApiToken:  process.env.TWITTER_API_TOKEN,
 });
-
-const debug   = new (require('./bots/debug'))  ('debugid', {
+const debug   = new bots.Debug  ('debugid', {
     bots: new BotGroup(artkalb, harambe, hogs)
 });
 
-const bots = new BotGroup(artkalb, harambe, hogs, debug);
-bots.on('message', msg => messages.push(msg));
+const testBots = new BotGroup(artkalb, harambe, hogs, debug);
+testBots.on('message', msg => messages.push(msg));
 
 const messages = [];
 
@@ -187,7 +182,7 @@ console.log('======================\nRunning http tests...\n====================
 
 // test Bot Runner
 
-const testBotRunner = botRouter(bots);
+const testBotRunner = botRouter(testBots);
 const app = new express();
 app.use(testBotRunner);
 const server = app.listen(3000);
