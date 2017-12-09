@@ -207,7 +207,7 @@ class MemeFactory {
       // generate & upload image
       meme.url = await groupme.uploadImagePNG(
         gen.generate(meme[COLS.TOP_TEXT], meme[COLS.BOTTOM_TEXT]),
-        this.options
+        this.options.groupmeApiToken
       )
 
       // update database
