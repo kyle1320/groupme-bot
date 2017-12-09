@@ -206,7 +206,7 @@ const server = app.listen(3000);
 
         await testRequest('/artkalb',
             {text: 'blahblah vibrator'},
-            {botId: 'artkalbid', text: 'BlahBlahBlah? I hardly know her!'}
+            {botId: 'artkalbid', text: 'BlahBlahBlah'}
         );
 
         await testRequest('/artkalb',

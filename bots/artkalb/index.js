@@ -14,10 +14,8 @@ const hardlyKnowHer = {
         self.lastMsgTime = 0;
     },
     consult: function (self, msg) {
-        function post (word, ignoreTimeDelay, lang) {
-            if (!ignoreTimeDelay) {
-                self.lastMsgTime = Date.now();
-            }
+        function post (word, lang) {
+            self.lastMsgTime = Date.now();
 
             switch (lang) {
                 case 'es':
@@ -36,7 +34,7 @@ const hardlyKnowHer = {
 
             if (re instanceof RegExp && re.test(msg.text)) {
 
-                post(response, true);
+                self.post(response);
                 return;
             }
         }
@@ -61,7 +59,7 @@ const hardlyKnowHer = {
                 }
             }
 
-            post(longestMatch.text, false, longestMatch.lang);
+            post(longestMatch.text, longestMatch.lang);
         }
     }
 };
