@@ -6,15 +6,16 @@ module.exports = class BotGroup extends EventEmitter {
   constructor (...botList) {
     super();
 
-    this.bots = botList;
+    this.bots = [];
     this.botMap = new Map();
 
-    var emitMessage = this.emit.bind(this, 'message');
+    botList.forEach(this.add.bind(this));
+  }
 
-    botList.forEach(bot => {
-        this.botMap.set(bot.name, bot);
-        bot.on('message', emitMessage);
-    });
+  add(bot) {
+    this.bots.push(bot);
+    this.botMap.set(bot.name, bot);
+    bot.on('message', this.emit.bind(this, 'message'));
   }
 
   // send the message only to bot with the given name (if it exists)
