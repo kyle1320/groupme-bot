@@ -4,11 +4,28 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 // a botRouter listens for POST requests and calls the appropriate bots.
-function botRouter(botGroup) {
+// requestKey is a string that clients must send as a query parameter
+// in order for the request to be accepted.
+function botRouter(botGroup, requestKey) {
   const router = new express.Router();
 
   router.use(bodyParser.json());
   router.post('/:botName', function(req, res) {
+
+    // Heroku does not currently support client SSL certificate validation,
+    // so there's no way to reliably verify whether the request is actually
+    // coming from GroupMe's servers. So instead, we use a secret key sent in
+    // the query string, and add that query parameter as part of the GroupMe
+    // bot callback URL.
+    // Note that this also means the client should definitely be using HTTPS,
+    // because we don't want to leak this key. But even if it does happen,
+    // we can still reset the key.
+    if (requestKey && req.query.key != requestKey) {
+      res.status(401); // Unauthorized
+      res.end();
+      return;
+    }
+
     if (preprocess(req)) {
         botGroup.consult(req.params.botName, req.body);
     }

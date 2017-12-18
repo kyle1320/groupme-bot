@@ -182,52 +182,61 @@ console.log('======================\nRunning http tests...\n====================
 
 // test Bot Runner
 
-const testBotRunner = botRouter(testBots);
+const testBotRunner = botRouter(testBots, "secretKey123");
 const app = new express();
 app.use(testBotRunner);
 const server = app.listen(3000);
 
 (async function() {
     try {
-        await testRequest('/artkalb',
+        await testRequest('/artkalb?key=secretKey123',
             {text: 'hello'}
         );
 
-        await testRequest('/harambe',
+        await testRequest('/harambe?key=secretKey123',
             {text: 'harambe'},
             {botId: 'harambeid', text: 'Dicks out for Harambe!'}
         );
 
-        await testRequest('/debug',
+        await testRequest('/debug?key=secretKey123',
             {text: '/help harambe translator'},
             {botId: 'debugid', text: 'harambe: Dicks out for Harambe!'},
             {botId: 'debugid', text: 'artkalb: translator? I hardly know her!'},
             {botId: 'debugid', text: /^hogs\: /}
         );
 
-        await testRequest('/artkalb',
+        await testRequest('/artkalb?key=secretKey123',
             {text: 'blahblah vibrator'},
             {botId: 'artkalbid', text: 'BlahBlahBlah'}
         );
 
-        await testRequest('/artkalb',
+        await testRequest('/artkalb?key=secretKey123',
             {text: 'estrella'},
             {botId: 'artkalbid', text: '¿estrella? ¡Apenas la conozco!'}
         );
 
-        await testRequest('/artkalb',
+        await testRequest('/artkalb?key=secretKey123',
             {text: 'i know a girl'},
             {botId: 'artkalbid', text: 'Girl!? Where??'}
         );
 
-        await testRequest('/hogs',
+        await testRequest('/hogs?key=secretKey123',
             {text: '/calc 5+5'},
             {botId: 'hogsid', text: '>>>> 5+5\n10'}
         );
 
-        await testRequest('/artkalb',
+        await testRequest('/artkalb?key=secretKey123',
             {text: '🅱️aller'},
             {botId: 'artkalbid', text: '🅱️aller? I hardly know her!'}
+        );
+
+        // request with no / invalid key should produce no response
+        await testRequest('/harambe',
+            {text: 'harambe'},
+        );
+
+        await testRequest('/harambe?key=invalidKey123',
+            {text: 'harambe'},
         );
 
         console.log('passed all tests');
