@@ -32,7 +32,7 @@ The `consult()` and `consultAll()` functions are used to send an incoming messag
 ## botRouter
 The botRouter function allows for the creation of an express.js Router that may run several bots simultaneously.
 
-the botRunner function takes a `BotGroup` as its only argument, and returns an expressjs  `Router` object. For any bot in the `BotGroup`, POST requests through the router to the path `/[bot.name]` will be directed to the bot.
+the botRunner function takes a `BotGroup` as its first argument, and an optional `string` as its second argument, and returns an expressjs  `Router` object. For any bot in the `BotGroup`, POST requests through the router to the path `/[bot.name]` will be directed to the bot. The second argument, `requestKey`, is used to prevent message spoofing – even if someone figures out the URL endpoint (it is open source, after all), they would need to know the key in order for a `POST`ed message to be considered. This key is passed as a query parameter, `"key"`, in the request, and so any requests that are missing the key or have an invalid key are ignored.
 
 ## groupmeServices
 The `groupmeServices` object defines the following functions for communicating with the GroupMe API:
