@@ -1,11 +1,9 @@
 'use strict';
 
-const Canvas = require('canvas')
-const pg = require('pg')
-const path = require('path')
-const fs = require('fs')
-const url = require('url')
-const groupme = require('../../groupme-services')
+const Canvas = require('canvas');
+const path = require('path');
+const fs = require('fs');
+const groupme = require('../../groupme-services');
 
 // Meme generation helper class
 class MemeGen {
@@ -30,11 +28,11 @@ class MemeGen {
 
     // top text
     this.ctx.textBaseline = 'top';
-    this.write(top.toUpperCase(), this.width / 2, 10, this.width - 20, this.height / 5, false)
+    this.write(top.toUpperCase(), this.width / 2, 10, this.width - 20, this.height / 5, false);
 
     // bottom text
     this.ctx.textBaseline = 'bottom';
-    this.write(bottom.toUpperCase(), this.width / 2, this.height - 10, this.width - 20, this.height / 5, true)
+    this.write(bottom.toUpperCase(), this.width / 2, this.height - 10, this.width - 20, this.height / 5, true);
 
     // return a stream with the generated image
     return this.canvas.toBuffer();
@@ -58,14 +56,14 @@ class MemeGen {
         var next = (line ? line + ' ' : line) + words[i];
 
         if (this.ctx.measureText(next).width > width) {
-          lines[reverse ? 'unshift' : 'push'](line)
+          lines[reverse ? 'unshift' : 'push'](line);
           line = words[i];
         } else {
           line = next;
         }
       }
 
-      lines[reverse ? 'unshift' : 'push'](line)
+      lines[reverse ? 'unshift' : 'push'](line);
 
       if (lines.length * lineHeight < height) break;
     }
@@ -73,7 +71,7 @@ class MemeGen {
     for (var line of lines) {
       this.ctx.strokeText(line, x, y);
       this.ctx.fillText(line, x, y);
-      y += reverse ? -lineHeight : lineHeight
+      y += reverse ? -lineHeight : lineHeight;
     }
   }
 }
@@ -99,55 +97,35 @@ var getGenerator = (function() {
       gen = new MemeGen(image, 400, 519); // TODO: calculate width / height
     }
 
-    return gen
+    return gen;
   }
 }())
 
-const TABLES = {
-  MEMES: 'memes'
-}
-
-const COLS = {
-  ID: 'id',
-  TOP_TEXT: 'top_text',
-  BOTTOM_TEXT: 'bottom_text',
-  URL: 'url'
-}
-
 class MemeFactory {
   constructor (options) {
-    this.options = options
+    this.options = options;
 
-    if (!options.databaseUrl) {
-      this.pool = null;
-      this.created = null;
-      return;
+    if (options.pickupLines && options.pickupLines.get) {
+      this.fetch = () => {
+        var time = +new Date();
+
+        if (this.cache && time < this.lastFetchTime + this.cacheExpiration) {
+          return this.cache;
+        }
+
+        this.lastFetchTime = time;
+
+        return Promise.resolve(options.pickupLines.get())
+          .then(memes => {
+            this.cache = memes;
+            return this.cache;
+          });
+      };
+      this.cache = null;
+      this.update = options.pickupLines.update;
+      this.cacheExpiration = options.pickupLines.cacheExpiration || 60 * 60 * 1000;
+      this.lastFetchTime = -Infinity;
     }
-
-    /* DATABASE SETUP */
-
-    const params = url.parse(options.databaseUrl)
-    const serverAuth = params.auth.split(':')
-    const config = {
-      user: serverAuth[0],
-      password: serverAuth[1],
-      host: params.hostname,
-      port: params.port,
-      database: params.pathname.split('/')[1],
-      ssl: true
-    }
-
-    this.pool = new pg.Pool(config)
-    this.created = this.pool.query(`
-      CREATE TABLE IF NOT EXISTS ${TABLES.MEMES}(
-        ${COLS.ID}          BIGSERIAL     PRIMARY KEY,
-        ${COLS.TOP_TEXT}    VARCHAR(5000) NOT NULL,
-        ${COLS.BOTTOM_TEXT} VARCHAR(5000) NOT NULL,
-        ${COLS.URL}         VARCHAR(5000)
-      );
-    `).catch(function (err) {
-      console.error(err)
-    })
 
     this._gen = null;
   }
@@ -158,10 +136,10 @@ class MemeFactory {
 
         // TODO: make this path a config value?
         fs.readFile(path.join(__dirname, './creepyart.jpg'), function (err, buf) {
-          if (err) reject(err)
-          else resolve(buf)
-        })
-      })
+          if (err) reject(err);
+          else     resolve(buf);
+        });
+      });
       var image = new Canvas.Image; //await loadImage('./creepyart.jpg')
       image.src = imgBuf;
 
@@ -175,30 +153,18 @@ class MemeFactory {
   // generates its image if necessary,
   // and returns its url.
   async getMeme () {
-    if (this.pool == null) {
+    if (!this.fetch) {
       return null;
     }
 
-    try {
-      await this.created;
-    } catch (e) {
-      console.log(e);
+    var memes = await this.fetch();
+
+    if (!memes || memes.length === 0) {
       return null;
     }
 
     // fetch a random row from the table
-    var meme = await this.pool.query(`
-      SELECT * FROM ${TABLES.MEMES}
-      ORDER BY RANDOM()
-      LIMIT 1
-    `)
-
-    // no memes :(
-    if (!meme.rowCount) {
-      return null;
-    }
-
-    meme = meme.rows[0]
+    var meme = memes[Math.floor(Math.random() * memes.length)];
 
     // if meme has not been generated
     if (!meme.url) {
@@ -206,20 +172,16 @@ class MemeFactory {
 
       // generate & upload image
       meme.url = await groupme.uploadImagePNG(
-        gen.generate(meme[COLS.TOP_TEXT], meme[COLS.BOTTOM_TEXT]),
+        gen.generate(meme.topText, meme.bottomText),
         this.options.groupmeApiToken
-      )
+      );
 
       // update database
-      this.pool.query(`
-        UPDATE ${TABLES.MEMES}
-        SET ${COLS.URL} = $1
-        WHERE ${COLS.ID} = $2
-      `, [meme.url, meme.id])
+      this.update && this.update(meme);
     }
 
     return meme.url;
   }
 }
 
-module.exports = MemeFactory
+module.exports = MemeFactory;
