@@ -113,12 +113,18 @@ module.exports = class ArtKalb extends Bot {
                 parseSpecialCases(this.options.specialCasesStr)
         }
 
+        this.disablePickupLines = this.options.disablePickupLines;
+
         hardlyKnowHer.setup(this);
-        pickupLines.setup(this);
+        if (!this.disablePickupLines) {
+            pickupLines.setup(this);
+        }
     }
 
     consult (msg) {
         hardlyKnowHer.consult(this, msg);
-        pickupLines.consult(this, msg);
+        if (!this.disablePickupLines) {
+            pickupLines.consult(this, msg);
+        }
     }
 };
