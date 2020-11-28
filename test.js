@@ -10,19 +10,9 @@ const {Bot, BotGroup, botRouter, bots} = require('.');
 const harambe = new bots.Harambe('harambeid', {
 
 });
-var artkalbPickupLines = [{
-    topText: "Ay gurl, are you a test?",
-    bottomText: "",
-    url: 'some.test.url/img.jpg'
-}];
 const artkalb = new bots.ArtKalb('artkalbid', {
     specialCases:    [/blahblah\b/i, "BlahBlahBlah"],
-    msgDelay:        150,
-    pickupLines: {
-        get: () => artkalbPickupLines,
-        update: () => {},
-        cacheExpiration: 150
-    }
+    msgDelay:        150
 });
 const hogs    = new bots.Hogs   ('hogsid', {
     hogsCalendarId:   '',
@@ -223,39 +213,6 @@ const server = app.listen(3000);
         await testRequest('/artkalb?key=secretKey123',
             {text: 'estrella'},
             {botId: 'artkalbid', text: '¿estrella? ¡Apenas la conozco!'}
-        );
-
-        await testRequest('/artkalb?key=secretKey123',
-            {text: 'i know a girl'},
-            {
-                botId: 'artkalbid',
-                text: 'Girl!? Where??',
-                imageUrl: 'some.test.url/img.jpg'
-            }
-        );
-
-        artkalbPickupLines = [{
-            topText: "Ay gurl, are you a test?",
-            bottomText: "",
-            url: 'some.new.url/img.jpg'
-        }];
-
-        await testRequest('/artkalb?key=secretKey123',
-            {text: 'look a girl'},
-            {
-                botId: 'artkalbid',
-                text: 'Girl!? Where??',
-                imageUrl: 'some.test.url/img.jpg'
-            }
-        );
-
-        await testRequest('/artkalb?key=secretKey123',
-            {text: 'girl!'},
-            {
-                botId: 'artkalbid',
-                text: 'Girl!? Where??',
-                imageUrl: 'some.new.url/img.jpg'
-            }
         );
 
         await testRequest('/hogs?key=secretKey123',

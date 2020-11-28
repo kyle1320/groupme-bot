@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "canvas": "^1.6.11",
     "express": "^4.16.3",
     "request-promise-native": "^1.0.5",
     "time": "^0.12.0",

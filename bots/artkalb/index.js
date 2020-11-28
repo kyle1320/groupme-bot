@@ -1,7 +1,6 @@
 'use strict';
 
 const Bot = require('../bot');
-const MemeFactory = require('./memegen');
 
 // the regular expression used to test for puns in messages.
 const punRegExpEn = /\S{4,}[eo]r\b/gi;
@@ -64,23 +63,6 @@ const hardlyKnowHer = {
     }
 };
 
-// pickup line memes
-const pickupLines = {
-    setup: function (self) {
-        self.memeFactory = new MemeFactory(self.options);
-    },
-    consult: async function (self, msg) {
-        var match = msg.text.match(/girls?\b/i)
-
-        if (match && match.length) {
-            var usage = match[0][0].toUpperCase() + match[0].substring(1).toLowerCase();
-            var img = await self.memeFactory.getMeme();
-
-            self.post(usage + "!? Where??", img)
-        }
-    }
-};
-
 function parseSpecialCases(specialCasesStr) {
     try {
         var specialCases = JSON.parse(specialCasesStr);
@@ -113,18 +95,10 @@ module.exports = class ArtKalb extends Bot {
                 parseSpecialCases(this.options.specialCasesStr)
         }
 
-        this.disablePickupLines = this.options.disablePickupLines;
-
         hardlyKnowHer.setup(this);
-        if (!this.disablePickupLines) {
-            pickupLines.setup(this);
-        }
     }
 
     consult (msg) {
         hardlyKnowHer.consult(this, msg);
-        if (!this.disablePickupLines) {
-            pickupLines.consult(this, msg);
-        }
     }
 };
