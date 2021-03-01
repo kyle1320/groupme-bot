@@ -5,6 +5,7 @@ const Bot = require('../bot');
 // the regular expression used to test for puns in messages.
 const punRegExpEn = /\S{4,}[eo]r\b/gi;
 const punRegExpEs = /\S{2,}ella\b/gi;
+const punRegExpFr = /\S{4,}sa\b/gi;
 
 // "____er? I hardly know her!" functionality
 const hardlyKnowHer = {
@@ -19,6 +20,9 @@ const hardlyKnowHer = {
             switch (lang) {
                 case 'es':
                     self.post('¿' + word + '? ¡Apenas la conozco!');
+                    break;
+                case 'fr':
+                    self.post(word + '? Je la connais à peine!')
                     break;
                 default:
                     self.post(word + '? I hardly know her!');
@@ -45,7 +49,8 @@ const hardlyKnowHer = {
         // get matches
         var matches = [].concat(
             (msg.text.match(punRegExpEn) || []).map(m => ({text: m, lang: 'en'})),
-            (msg.text.match(punRegExpEs) || []).map(m => ({text: m, lang: 'es'}))
+            (msg.text.match(punRegExpEs) || []).map(m => ({text: m, lang: 'es'})),
+            (msg.text.match(punRegExpFr) || []).map(m => ({text: m, lang: 'fr'}))
         )
 
         if (matches && matches.length) {
